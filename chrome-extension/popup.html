@@ -1,0 +1,27 @@
+<html>
+<head>
+	<link type="text/css" href="style.css" rel="stylesheet" />
+	<script src="jquery.js"></script>
+	<script src="main.js"></script>
+</head>
+<body>
+	<form id="contactFrom">
+		<table>
+			<tr>
+				<td class="label">Contact Name:</td>
+				<td><input type="text" name="contact_name" id="contact_name" /></td>
+			</tr>
+			<tr>
+				<td class="label">Phone Number:</td>
+				<td><input type="text" name="phone_number" id="phone_number" maxlength="10"/></td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td><input type="submit" value="Save to Phone" onclick="save()"/></td>
+			</tr>
+		</table>
+	</form>
+	<div id="response">Add a new contact by filling the form</div>
+	<div id="footer">Developed by Ngo Minh Nam</div>
+</body>
+</html>
