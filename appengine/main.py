@@ -101,7 +101,6 @@ def sendToPhone(self,contact_name, phone_number, email):
     #Alternatively, it's possible to store your authToken in a txt file and read from it (CTP implementation)
     info = Info.get_by_id(1)
     authToken = info.registration_id
-    #authToken = 'DQAAAJsAAABBBL2vA5J1gXuwimYSX2Di6AGcMDI44poyq39RcZwp9Wu-nV8-U3ADCbat8T7PewQZoliCZURKVgo6rlgWczogn0DtJiSeMwyqSN3t2iTl_IC1sLoa_-TyME23rUNo0-y-hl_wgauPdFhq507wyx41_ppxS2SVeBUZxj1imxh8Zzp_O0SxWryz-zzaawsA-ElXowtJvrFeUGQS_g90mbPO'
     form_fields = {
         "registration_id": registration_id,
         "collapse_key": hash(contact_name), #collapse_key is an arbitrary string (implement as you want)

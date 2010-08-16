@@ -1,0 +1,7 @@
+Author: NGO MINH NAM 
+
+Third party application server on App Engine is rewritten from Java to Python based on ChromToPhone project:
+http://code.google.com/p/chrometophone/source/browse/#svn/trunk/appengine
+
+Android client's source code is also modified from ChromeToPhone.
+Future features to be implemented.
