@@ -6,28 +6,32 @@ function save(){
 	
 	get_url = server_url+"?name="+contact_name+"&phone="+phone_number;
 	if(contact_name == '' || phone_number == ''){
-		$("#response").hide().html("Fill in all blanks").fadeIn(2000);
+		$("#response").hide().html("Fill in all blanks").fadeIn(1000);
 	}
 	else if(!isNumber(phone_number)){
-		$("#response").hide().html("Phone number is invalid").fadeIn(2000);
+		$("#response").hide().html("Phone number is invalid").fadeIn(1000);
 	}
 	else{
 		$.get(get_url,function(data){
 			if(data == "OK"){
-				$("#response").hide().html("Contact pushed to the phone").fadeIn(2000);
+				$("#response").hide().html("Contact pushed to the phone").fadeIn(1000);
 				$("#contact_name").val("");
 				$("#phone_number").val("");
 			}
 			else if(data == "error_params"){
-				$("#response").hide().html("Fill in all blanks").fadeIn(2000);
+				$("#response").hide().html("Fill in all blanks").fadeIn(1000);
+			}
+			else if(data == "error_login"){
+				$("#response").hide().html("Login to service required").fadeIn(1000);
+				chrome.tabs.create({url: get_url});
 			}
 			else{
-				$("#response").hide().html("There was an error sending the contact").fadeIn(2000);
+				$("#response").hide().html("There was an error sending the contact").fadeIn(1000);
 			}		    
 		});
 	}
-
 }
+
 
 
 function isNumber(n) {

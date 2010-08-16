@@ -89,8 +89,8 @@ class SendHandler(webapp.RequestHandler):
 	            #Send the message to C2DM server
                 sendToPhone(self,contact_name, phone_number, user.email())
             else:
-	            #Redirect users to login page
-                self.redirect(users.create_login_url(self.request.uri))
+	            #User is not logged in
+                self.response.out.write('error_login')
 
 #Helper method to send params to C2DM server
 def sendToPhone(self,contact_name, phone_number, email):
