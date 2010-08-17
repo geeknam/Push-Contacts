@@ -23,10 +23,13 @@
 #           - Send POST request to C2DM server to be pushed to the Android phone
 # Notes:    - delay_while_idle and sendWithRetry is not implemented
 
+from os import path
+
 from google.appengine.ext import db, webapp
 from google.appengine.ext.webapp import util
 from google.appengine.api import users
 from google.appengine.api import urlfetch
+from google.appengine.ext.webapp.template import render
 import urllib
 
 
@@ -35,8 +38,9 @@ class Info(db.Model):
 
 class MainHandler(webapp.RequestHandler):
     def get(self):
-        self.response.headers['Content-Type'] = 'text/plain'
-        self.response.out.write('Third-party application server for PushContacts app on Android')
+        tmpl = path.join(path.dirname(__file__), 'static/html/main.html')
+        context = {"data": "something"}
+        self.response.out.write(render(tmpl,context))
 
 class RegisterHandler(webapp.RequestHandler):
     def get(self):
@@ -72,6 +76,34 @@ class UnregisterHandler(webapp.RequestHandler):
 	            self.response.out.write('OK')
 	        else:
 		        self.response.out.write('Not authorized')
+		
+class SmsformHandler(webapp.RequestHandler):
+    def get(self):
+        phone_number = self.request.get('phone')
+        if phone_number.isdigit():
+	        self.response.out.write("""
+			<html>
+	          <body>
+	            <form action="/sms" method="post">
+	              Text to SMS:<br/>
+                  <textarea name="sms" rows="4" cols="40" maxlength="250"></textarea><br/>
+                  <input type="hidden" name="phone" value="%s" /><br/>
+	              <input type="submit" value="Send SMS">
+	            </form>
+	          </body>
+	        </html>
+			""" % phone_number)
+        else:
+            self.response.out.write("Not a valid phone number")	    
+
+class SmsHandler(webapp.RequestHandler):
+    def post(self):
+        phone_number = self.request.get('phone')
+        sms = self.request.get('sms')
+        user = users.get_current_user()
+        data = {"data.sms" : sms,
+                "data.phone_number" : phone_number}
+        sendToPhone(self,data, user.email())
 
 class SendHandler(webapp.RequestHandler):
     def get(self):
@@ -87,13 +119,15 @@ class SendHandler(webapp.RequestHandler):
             user = users.get_current_user()
             if user:
 	            #Send the message to C2DM server
-                sendToPhone(self,contact_name, phone_number, user.email())
+                data = {"data.contact_name" : contact_name,
+                        "data.phone_number" : phone_number}
+                sendToPhone(self,data, user.email())
             else:
 	            #User is not logged in
                 self.response.out.write('error_login')
 
 #Helper method to send params to C2DM server
-def sendToPhone(self,contact_name, phone_number, email):
+def sendToPhone(self,data,email):
     info = Info.get_by_key_name(email)
     registration_id = info.registration_id
 
@@ -103,10 +137,9 @@ def sendToPhone(self,contact_name, phone_number, email):
     authToken = info.registration_id
     form_fields = {
         "registration_id": registration_id,
-        "collapse_key": hash(contact_name), #collapse_key is an arbitrary string (implement as you want)
-        "data.contact_name": contact_name,
-        "data.phone_number": phone_number,
+        "collapse_key": hash(email), #collapse_key is an arbitrary string (implement as you want)
     }
+    form_fields.update(data)
     form_data = urllib.urlencode(form_fields)
     url = "https://android.clients.google.com/c2dm/send"
     
@@ -126,7 +159,10 @@ def main():
     application = webapp.WSGIApplication([('/', MainHandler),
                                           ('/register', RegisterHandler),
                                           ('/unregister', UnregisterHandler),
-                                          ('/send', SendHandler)],
+                                          ('/send', SendHandler),
+                                          ('/smsform', SmsformHandler),
+                                          ('/sms', SmsHandler)
+                                          ],
                                           debug=True)
     util.run_wsgi_app(application)
 
