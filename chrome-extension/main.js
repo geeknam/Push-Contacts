@@ -21,19 +21,16 @@ function save(){
 			else if(data == "error_params"){
 				$("#response").hide().html("Fill in all blanks").fadeIn(1000);
 			}
-			else if(data == "error_login"){
+			else{
 				$("#response").hide().html("Login to service required").fadeIn(1000);
 				chrome.tabs.create({url: get_url});
-			}
-			else{
-				$("#response").hide().html("There was an error sending the contact").fadeIn(1000);
-			}		    
+			}	    
 		});
 	}
 }
 
-
-
 function isNumber(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 }
+
+

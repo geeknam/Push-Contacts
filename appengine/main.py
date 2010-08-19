@@ -39,7 +39,7 @@ class Info(db.Model):
 class MainHandler(webapp.RequestHandler):
     def get(self):
         tmpl = path.join(path.dirname(__file__), 'static/html/main.html')
-        context = {"data": "something"}
+        context = {}
         self.response.out.write(render(tmpl,context))
 
 class RegisterHandler(webapp.RequestHandler):
@@ -50,15 +50,15 @@ class RegisterHandler(webapp.RequestHandler):
             self.error(400)
             self.response.out.write('Must specify devregid')
         else:
-	        user = users.get_current_user()
-	        if user:
+            user = users.get_current_user()
+            if user:
 		        #Store registration_id and an unique key_name with email value
 	            info = Info(key_name=user.email())
 	            info.registration_id = devregid   
 	            info.put()
 	            self.response.out.write('OK')
-	        else:
-		        self.response.out.write('Not authorized')         	
+            else:
+                self.response.out.write('Not authorized')
 
 class UnregisterHandler(webapp.RequestHandler):
     def get(self):
@@ -80,30 +80,38 @@ class UnregisterHandler(webapp.RequestHandler):
 class SmsformHandler(webapp.RequestHandler):
     def get(self):
         phone_number = self.request.get('phone')
-        if phone_number.isdigit():
-	        self.response.out.write("""
-			<html>
-	          <body>
-	            <form action="/sms" method="post">
-	              Text to SMS:<br/>
-                  <textarea name="sms" rows="4" cols="40" maxlength="250"></textarea><br/>
-                  <input type="hidden" name="phone" value="%s" /><br/>
-	              <input type="submit" value="Send SMS">
-	            </form>
-	          </body>
-	        </html>
-			""" % phone_number)
+        user = users.get_current_user()
+        if user:
+	        if phone_number.isdigit():
+		        self.response.out.write("""
+				<html>
+		          <body>
+		            <form action="/sms" method="post">
+		              Text to SMS:<br/>
+	                  <textarea name="sms" rows="4" cols="40" maxlength="250"></textarea><br/>
+	                  <input type="hidden" name="phone" value="%s" /><br/>
+		              <input type="submit" value="Send SMS">
+		            </form>
+		          </body>
+		        </html>
+				""" % phone_number)
+	        else:
+	            self.response.out.write("Not a valid phone number")
         else:
-            self.response.out.write("Not a valid phone number")	    
+		    self.redirect(users.create_login_url(self.request.uri))   
 
 class SmsHandler(webapp.RequestHandler):
     def post(self):
         phone_number = self.request.get('phone')
         sms = self.request.get('sms')
+        
         user = users.get_current_user()
-        data = {"data.sms" : sms,
-                "data.phone_number" : phone_number}
-        sendToPhone(self,data, user.email())
+        if user:
+	        data = {"data.sms" : sms,
+	                "data.phone_number" : phone_number}
+	        sendToPhone(self,data, user.email())
+        else:
+	        self.redirect(users.create_login_url(self.request.uri))
 
 class SendHandler(webapp.RequestHandler):
     def get(self):
@@ -124,7 +132,7 @@ class SendHandler(webapp.RequestHandler):
                 sendToPhone(self,data, user.email())
             else:
 	            #User is not logged in
-                self.response.out.write('error_login')
+                self.redirect(users.create_login_url(self.request.uri))
 
 #Helper method to send params to C2DM server
 def sendToPhone(self,data,email):
@@ -135,6 +143,7 @@ def sendToPhone(self,data,email):
     #Alternatively, it's possible to store your authToken in a txt file and read from it (CTP implementation)
     info = Info.get_by_id(1)
     authToken = info.registration_id
+    #authToken = 'DQAAAJsAAABBBL2vA5J1gXuwimYSX2Di6AGcMDI44poyq39RcZwp9Wu-nV8-U3ADCbat8T7PewQZoliCZURKVgo6rlgWczogn0DtJiSeMwyqSN3t2iTl_IC1sLoa_-TyME23rUNo0-y-hl_wgauPdFhq507wyx41_ppxS2SVeBUZxj1imxh8Zzp_O0SxWryz-zzaawsA-ElXowtJvrFeUGQS_g90mbPO'
     form_fields = {
         "registration_id": registration_id,
         "collapse_key": hash(email), #collapse_key is an arbitrary string (implement as you want)

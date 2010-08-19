@@ -1,5 +1,4 @@
 sms_form_url = "http://pushcontacts.appspot.com/smsform";
-//sms_form_url = "http://localhost:8093/smsform";
 
 // Google Contact Service
 google.load("gdata", "1.x");
@@ -24,19 +23,19 @@ function checkLogin(){
 
 function getMyContacts(){
 	$("#response").html("");
-	// The feed URI that is used for retrieving contacts
+	
 	var feedUri = 'http://www.google.com/m8/feeds/contacts/default/full';
 	var query = new google.gdata.contacts.ContactQuery(feedUri);
 
-	// Set the maximum of the result set to be 50
+	// Set the maximum of the result set to be 500
 	query.setMaxResults(500);
 
 	// callback method to be invoked when getContactFeed() returns data
 	var callback = function(result) {
-	  // An array of contact entries
+	  	// An array of contact entries
 		var entries = result.feed.entry;
 
-	  // Iterate through the array of contact entries
+	  	// Iterate through the array of contact entries
 	  	for (var i = 0; i < entries.length; i++) {
 	    	var contactEntry = entries[i];
 	
@@ -67,8 +66,5 @@ function getMyContacts(){
 
 function initFunc() {
   	setupContactsService();
-  	if(checkLogin()){
-		logMeIn();
-  	}
   	getMyContacts();
 }
