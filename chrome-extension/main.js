@@ -21,6 +21,9 @@ function save(){
 			else if(data == "error_params"){
 				$("#response").hide().html("Fill in all blanks").fadeIn(1000);
 			}
+			else if(data == "error_register"){
+				$("#response").hide().html("Please register your device").fadeIn(1000);
+			}
 			else{
 				$("#response").hide().html("Login to service required").fadeIn(1000);
 				chrome.tabs.create({url: get_url});
@@ -32,5 +35,4 @@ function save(){
 function isNumber(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 }
-
 

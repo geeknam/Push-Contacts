@@ -1,6 +1,6 @@
 {
   "name": "Push Contacts Chrome Extension",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Create new contacts on your Android phone with a Chrome browser",
   "browser_action": {
     "default_icon": "icon.png",

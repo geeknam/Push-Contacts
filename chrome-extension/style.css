@@ -6,35 +6,57 @@ body {
     background: -webkit-gradient(linear, 0 0, 0 30%, from(#dedede), to(white));
 }
 
-input[type=submit]{
-    -webkit-border-radius:14px;
-    -webkit-box-shadow: 2px 2px 6px #232323;
-    background-color: #abff45;
-    text-shadow: #c9c3e6 0px 0px 2px;
-    font-weight: bold;
-    color: #083b00;
-    border: none;
-    padding: 5px 15px 5px;
-    cursor: pointer;
-    float: right;
-    background-image:url(button-smooth.png);
+input[type='submit']{
+	border-style:none;
+	background: #91bd09 url(alert-overlay.png) repeat-x;
+	display: inline-block;
+	padding: 5px 10px 6px;
+	color: #fff;
+	text-decoration: none;
+	font-weight: bold;
+	line-height: 1;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-moz-box-shadow: 0 1px 3px #999;
+	-webkit-box-shadow: 0 1px 3px #999;
+	text-shadow: 0 -1px 1px #222;
+	border-bottom: 1px solid #222;
+	position: relative;
+	cursor: pointer;
+	-moz-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+	-webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+	text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
+	border-bottom: 1px solid rgba(0,0,0,0.25);
 }
 
-input[type=submit]:hover{
-    background-color: #d4ffb6
+input[type='submit']:hover{ 
+	background-color: #749a02;
+	color: #fff;
 }
 
-input[type=text] {
-    -webkit-border-radius:5px;
-    border: none;
-    height: 20px;
-    padding: 3px;
-    background-color: #e3ffc7;
+input[type='text']{
+	padding: 3px;
+	border: solid 1px #E5E5E5;
+	outline: 0;
+	font: normal 13px/100% Verdana, Tahoma, sans-serif;
+	width: 170px;
+	background: -webkit-gradient(linear, left top, left 25, from(#FFFFFF), color-stop(4%, #EEEEEE), to(#FFFFFF));
+	background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
+	box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;
+	-moz-box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;
+	-webkit-box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;
 }
+
+input:hover, input:focus{
+	border-color: #C9C9C9;
+	-webkit-box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 8px;
+}
+
 
 a{
-	color: #abff45;
+	color: #999999;
 	text-decoration:none;
+	font-size:10px;
 }
 
 .label{

@@ -30,17 +30,23 @@ from google.appengine.ext.webapp import util
 from google.appengine.api import users
 from google.appengine.api import urlfetch
 from google.appengine.ext.webapp.template import render
-import urllib
+from google.appengine.api.labs import taskqueue
 
+import urllib
+import pusherapp
 
 class Info(db.Model):
     registration_id = db.StringProperty(multiline=True)
 
 class MainHandler(webapp.RequestHandler):
     def get(self):
-        tmpl = path.join(path.dirname(__file__), 'static/html/main.html')
-        context = {}
-        self.response.out.write(render(tmpl,context))
+		user = users.get_current_user()
+		if not user:
+			self.redirect(users.create_login_url(self.request.uri))
+		else:
+			tmpl = path.join(path.dirname(__file__), 'static/html/main.html')
+			context = {'user': user.nickname()}
+			self.response.out.write(render(tmpl,context))
 
 class RegisterHandler(webapp.RequestHandler):
     def get(self):
@@ -75,30 +81,7 @@ class UnregisterHandler(webapp.RequestHandler):
 	            info.delete()
 	            self.response.out.write('OK')
 	        else:
-		        self.response.out.write('Not authorized')
-		
-class SmsformHandler(webapp.RequestHandler):
-    def get(self):
-        phone_number = self.request.get('phone')
-        user = users.get_current_user()
-        if user:
-	        if phone_number.isdigit():
-		        self.response.out.write("""
-				<html>
-		          <body>
-		            <form action="/sms" method="post">
-		              Text to SMS:<br/>
-	                  <textarea name="sms" rows="4" cols="40" maxlength="250"></textarea><br/>
-	                  <input type="hidden" name="phone" value="%s" /><br/>
-		              <input type="submit" value="Send SMS">
-		            </form>
-		          </body>
-		        </html>
-				""" % phone_number)
-	        else:
-	            self.response.out.write("Not a valid phone number")
-        else:
-		    self.redirect(users.create_login_url(self.request.uri))   
+		        self.response.out.write('Not authorized') 
 
 class SmsHandler(webapp.RequestHandler):
     def post(self):
@@ -136,32 +119,55 @@ class SendHandler(webapp.RequestHandler):
 
 #Helper method to send params to C2DM server
 def sendToPhone(self,data,email):
-    info = Info.get_by_key_name(email)
-    registration_id = info.registration_id
+	info = Info.get_by_key_name(email)
+	if not info:
+		self.response.out.write('error_register')
+	else:
+	    registration_id = info.registration_id
 
-    #Get authentication token pre-stored on datastore with ID 1
-    #Alternatively, it's possible to store your authToken in a txt file and read from it (CTP implementation)
-    info = Info.get_by_id(1)
-    authToken = info.registration_id
-    #authToken = 'DQAAAJsAAABBBL2vA5J1gXuwimYSX2Di6AGcMDI44poyq39RcZwp9Wu-nV8-U3ADCbat8T7PewQZoliCZURKVgo6rlgWczogn0DtJiSeMwyqSN3t2iTl_IC1sLoa_-TyME23rUNo0-y-hl_wgauPdFhq507wyx41_ppxS2SVeBUZxj1imxh8Zzp_O0SxWryz-zzaawsA-ElXowtJvrFeUGQS_g90mbPO'
-    form_fields = {
-        "registration_id": registration_id,
-        "collapse_key": hash(email), #collapse_key is an arbitrary string (implement as you want)
-    }
-    form_fields.update(data)
-    form_data = urllib.urlencode(form_fields)
-    url = "https://android.clients.google.com/c2dm/send"
+	    #Get authentication token pre-stored on datastore with ID 1
+	    #Alternatively, it's possible to store your authToken in a txt file and read from it (CTP implementation)
+	    info = Info.get_by_id(1)
+	    authToken = info.registration_id
+	    form_fields = {
+	        "registration_id": registration_id,
+	        "collapse_key": hash(email), #collapse_key is an arbitrary string (implement as you want)
+	    }
+	    form_fields.update(data)
+	    form_data = urllib.urlencode(form_fields)
+	    url = "https://android.clients.google.com/c2dm/send"
     
-    #Make a POST request to C2DM server
-    result = urlfetch.fetch(url=url,
-                            payload=form_data,
-                            method=urlfetch.POST,
-                            headers={'Content-Type': 'application/x-www-form-urlencoded',
-                                     'Authorization': 'GoogleLogin auth=' + authToken})
-    if result.status_code == 200:
-	    self.response.out.write("OK")
-    else:
-	    self.response.out.write('error_c2dm')
+	    #Make a POST request to C2DM server
+	    result = urlfetch.fetch(url=url,
+	                            payload=form_data,
+	                            method=urlfetch.POST,
+	                            headers={'Content-Type': 'application/x-www-form-urlencoded',
+	                                     'Authorization': 'GoogleLogin auth=' + authToken})
+	    if result.status_code == 200:
+		    self.response.out.write("OK")
+	    else:
+		    self.response.out.write('error_c2dm')
+
+class PushHandler(webapp.RequestHandler):
+    def post(self):
+	    user = self.request.get('user')
+	    phone = self.request.get('phone')
+	    sms   = self.request.get('sms')
+	    taskqueue.add(url='/worker/%s' % (user), params={'phone': phone, 'sms': sms})
+
+class WorkerHandler(webapp.RequestHandler):
+
+    pusher_api_key = "b83d2cada7ffe791153b"
+    pusher_app_id  = "1718"
+    pusher_secret  = "c21d24f1c95430e0aacb"
+    
+    def post(self, channel):
+	    pusher = pusherapp.Pusher(app_id=self.pusher_app_id, key=self.pusher_api_key, secret=self.pusher_secret)
+	    phone = self.request.get('phone')
+	    sms   = self.request.get('sms')
+	
+	    data = {'phone': phone, 'sms': sms}
+	    result = pusher[channel].trigger('my_event', data=data)    
 
 	        
 def main():
@@ -169,8 +175,9 @@ def main():
                                           ('/register', RegisterHandler),
                                           ('/unregister', UnregisterHandler),
                                           ('/send', SendHandler),
-                                          ('/smsform', SmsformHandler),
-                                          ('/sms', SmsHandler)
+                                          ('/sms', SmsHandler),
+                                          ('/push', PushHandler),
+                                          (r'/worker/(.*)', WorkerHandler)
                                           ],
                                           debug=True)
     util.run_wsgi_app(application)

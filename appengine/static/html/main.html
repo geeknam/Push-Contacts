@@ -1,13 +1,118 @@
-<html>
+<html xmlns:fb="http://www.facebook.com/2008/fbml">
 	<head>
+		<title>Android Push Contacts</title>
+		
 	    <link type="text/css" rel="stylesheet" href="/static/css/style.css" />
+		<link type="text/css" rel="stylesheet" href="/static/css/jquery.gritter.css" />
+		<link type="text/css" rel="stylesheet" href="/static/js/facebox/facebox.css" />
+		<link type="text/css" rel="stylesheet" href="/static/js/fancybox/jquery.fancybox-1.3.1.css" />
+		
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+		<script src="/static/js/facebox/facebox.js"></script>
+		<script src="/static/js/fancybox/jquery.fancybox-1.3.1.pack.js"></script>
 		<script src="http://www.google.com/jsapi"></script>
+		<script src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php"></script>
+		<script src="http://js.pusherapp.com/1.5/pusher.min.js"></script>
+		<script src="/static/js/jquery.gritter.min.js"></script>
 		<script src="/static/js/gcontacts.js"></script>
+				
+		<script>
+			FB.init("aa644770dd594258e84952ad117c5554", "/static/js/xd_receiver.htm");
+			
+			var pusher = new Pusher('b83d2cada7ffe791153b');
+			pusher.subscribe('emoinrp'); //{{ user }}
+
+			pusher.bind('my_event', function(data) {
+			  	$.gritter.add({
+					// (string | mandatory) the heading of the notification
+					title: 'SMS from ' + data["phone"],
+					// (string | mandatory) the text inside the notification
+					text: data["sms"],
+					// (string | optional) the image to display on the left
+					image: '/static/images/sms_icon.png',
+					// (bool | optional) if you want it to fade out on its own or just sit there
+					sticky: false, 
+					// (int | optional) the time you want it to be alive for before fading out
+					time: ''
+				});
+			});
+		</script>
 	</head>
 	<body>
 		<img src="/static/css/blank.png" style="position:absolute; top: -1000px;"/>
-		<input type='button' value='Login' onClick='logMeIn()'/><br />
-		<div id="response">Data loaded here</div>
+		<div id="guide" class="box">
+			<div style="margin-bottom:20px">
+				<img src ="/static/css/icon.png" width="60px" /> 
+				<span style="font-size: 30px; color:#91bd09; float:right;margin-right:15px;text-shadow: 0px 1px 2px #749a02;">Android Push Contacts</span>
+			</div>
+			<span class="header">About the project:</span>
+			<ul>
+				<li>Allows users to save contacts to phone, send sms from the web browser/chrome extension</li>
+				<li>Makes use of Android <a href="http://code.google.com/android/c2dm/index.html">C2DM</a> to push messages to Android devices</li>
+				<li>
+					Inspired by <a href="http://code.google.com/p/chrometophone/">ChromeToPhone</a> project 
+				</li>
+				<li>
+					Fully open sourced, you can clone the source code from
+					<a href="http://github.com/macbuntu/Push-Contacts">GitHub</a>
+				</li>
+			</ul>
+			
+			<span class="header">How to use:</span>
+			<ul>
+				<li>
+					Download Android application 
+					<a href="/static/css/qrcode.png" rel="facebox">Push Contacts</a>
+					(Android 2.2 is required)
+				</li>
+				<li>Register the device with downloaded application</li>
+				<li>
+					You can additionally install <a href="http://goo.gl/doIg">Chrome Extension</a>
+				</li>
+			</ul>
+			
+			<span class="header">Author:</span>
+			<ul>
+				<li><a href="http://www.facebook.com/MacBuntu">Facebook</a></li>
+				<li><a href="http://twitter.com/NgoMinhNam">Twitter</a></li>
+				<li><a href="http://namdr0id.blogspot.com">Blog</a></li>
+			</ul>
+			
+			<input type="submit" value="Comments" onClick="showCommentBox();" />
+			<input type="submit" value="Share on Facebook" onClick="share('http://www.facebook.com/sharer.php?u=http://pushcontacts.appspot.com');" />
+			<input type="submit" value="Share on Twitter" onClick="share('http://twitter.com/home?status=http://pushcontacts.appspot.com');" />
+		</div>
+		
+		<div id="content" class="box">
+			<div>
+				<input type='button' value='Load Contacts' onClick='logMeIn()' />
+				<input type='button' value='Create Contact' onClick='createContact()' />
+				<span id="searchspan">Search: <input type="text" id="search" /></span>
+			</div>
+			<div id="gcontacts">Loading contacts...</div>
+		</div>
+
+		<!-- ********** HIDDEN ************ -->
+		<form id="smsbox" method="post" action="/sms">
+	         <p class="smsto">SMS to <span id="contact"></span></p>
+             <p><textarea name="sms" id="sms" rows="5" maxlength="250"></textarea></p>
+             <p><input type="hidden" name="phone" id="phone" /></p>
+             <input type="submit" value="Send SMS" />
+		</form>
+		
+		<form id="contactbox" method="get" action="/send">
+	         <p class="smsto">Create contact</p>
+             <br>Contact Name: </br>
+			 <input type="text" name="name" /><br/>
+			 <br>Contact Phone: </br>
+             <input type="text" name="phone" />
+             <p><input type="submit" value="Save To Phone" /></p>
+		</form>
+		
+		<div id="fbcomments">
+			<fb:comments numposts="7"></fb:comments>
+		</div>
+		<!-- ****************************** -->
+		
 	</body>
-</html>
+</html

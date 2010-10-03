@@ -1,0 +1,124 @@
+body {
+	background: #F2F2F2;
+	font-family: Rockwell, Georgia, "Times New Roman", Times, serif;
+	font-size: 13px;
+	line-height: 1.6;
+	color: gray;
+}
+
+.box {
+	margin: 25px;
+	padding: 20px 30px;
+	border: 1px solid #D2D2D2;
+	-moz-box-shadow: 0 0 30px #CCC;
+	-webkit-box-shadow: 0 0 30px #CCC;
+	box-shadow: 0 0 30px #CCC;
+	background: #FFF;
+	background: -webkit-gradient(linear, left top, left 15, from(#FFFFFF), color-stop(4%, #EEEEEE), to(#FFFFFF));
+	background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 15px);
+}
+
+#guide{
+	float: left;
+	width: 400px;
+}
+
+.header{
+	font-size:22px;
+}
+
+#content{
+	float: right;
+	width: 600px;
+}
+
+#searchspan{
+	margin-left: 100px;
+	font-size: 15px;
+	font-weight: bold;
+}
+
+#gcontacts{
+	margin-top: 20px;
+}
+
+td{
+	padding-left: 10px;
+}
+
+a{
+	text-decoration:none;
+	color:#91bd09;
+}
+
+.smsto{
+	font-size: 20px;
+	margin: auto;
+	color:#91bd09; 
+	font-weight:bold;
+	padding:10px; 
+	-moz-border-radius: 5px; 
+	-khtml-border-radius: 5px; 
+	-webkit-border-radius: 5px;
+	background: -moz-linear-gradient(top, #dedede, white 50%);
+	background: -webkit-gradient(linear, 0 0, 0 50%, from(#dedede), to(white)); 
+}
+
+
+input[type='button'], input[type='submit']{
+	border-style:none;
+	background: #91bd09 url(alert-overlay.png) repeat-x;
+	display: inline-block;
+	padding: 5px 10px 6px;
+	color: #fff;
+	text-decoration: none;
+	font-weight: bold;
+	line-height: 1;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-moz-box-shadow: 0 1px 3px #999;
+	-webkit-box-shadow: 0 1px 3px #999;
+	text-shadow: 0 -1px 1px #222;
+	border-bottom: 1px solid #222;
+	position: relative;
+	cursor: pointer;
+	-moz-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+	-webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+	text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
+	border-bottom: 1px solid rgba(0,0,0,0.25);
+}
+
+input[type='button']:hover, input[type='submit']:hover{ 
+	background-color: #749a02;
+	color: #fff;
+}
+
+input[type='text'], textarea {
+	padding: 5px;
+	border: solid 1px #E5E5E5;
+	outline: 0;
+	font: normal 13px/100% Verdana, Tahoma, sans-serif;
+	width: 200px;
+	background: -webkit-gradient(linear, left top, left 25, from(#FFFFFF), color-stop(4%, #EEEEEE), to(#FFFFFF));
+	background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
+	box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;
+	-moz-box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;
+	-webkit-box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;
+}
+
+textarea {
+	width: 400px;
+	max-width: 400px;
+	line-height: 150%;
+}
+
+input:hover, textarea:hover,
+input:focus, textarea:focus {
+	border-color: #C9C9C9;
+	-webkit-box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 8px;
+}
+
+.form label {
+	margin-left: 10px;
+	color: #999999;
+}
