@@ -26,12 +26,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.telephony.SmsMessage;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /** 
  * Main screen - settings, registration, account selection. 
@@ -39,6 +41,7 @@ import android.widget.TextView;
 public class ActivityUI extends Activity {
     public static final String UPDATE_UI_ACTION = "sg.macbuntu.android.pushcontacts.UPDATE_UI";
     public static final String AUTH_PERMISSION_ACTION = "sg.macbuntu.android.pushcontacts.AUTH_PERMISSION";
+    //private static final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
 
     private boolean mPendingAuth = false;
     private Context mContext = null;
@@ -61,7 +64,7 @@ public class ActivityUI extends Activity {
 
         registerReceiver(mUpdateUIReceiver, new IntentFilter(UPDATE_UI_ACTION));
         registerReceiver(mAuthPermissionReceiver, new IntentFilter(AUTH_PERMISSION_ACTION));
-
+        //registerReceiver(SmsReceiver, new IntentFilter(SMS_RECEIVED));
         updateStatus();
     }
 
@@ -69,6 +72,7 @@ public class ActivityUI extends Activity {
     public void onDestroy() {
         unregisterReceiver(mUpdateUIReceiver);
         unregisterReceiver(mAuthPermissionReceiver);
+        //unregisterReceiver(SmsReceiver);
         super.onDestroy();
     }
 
@@ -157,4 +161,34 @@ public class ActivityUI extends Activity {
             }
         }
     };
+    
+ /*   private final BroadcastReceiver SmsReceiver = new BroadcastReceiver() {
+		
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			
+	        Bundle bundle = intent.getExtras();        
+	        SmsMessage[] msgs = null;
+	        
+	        String contact = "";
+	        String body = "";
+	        String account = "";
+	        
+	        if (bundle != null)
+	        {
+	            Object[] pdus = (Object[]) bundle.get("pdus");
+	            
+	            msgs = new SmsMessage[pdus.length];            
+	            msgs[0] = SmsMessage.createFromPdu((byte[])pdus[0]);  
+	            
+	            contact = msgs[0].getOriginatingAddress();                     
+	            body    = msgs[0].getMessageBody().toString();       
+	            //account = getAccount();
+	            
+	            //Toast.makeText(context, body, Toast.LENGTH_LONG).show();
+	            
+	        } 		
+		}
+	}; */
+    
 }

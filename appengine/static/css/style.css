@@ -51,6 +51,10 @@ a{
 	color:#91bd09;
 }
 
+a:hover{
+	text-shadow: 0px 1px 1px #749a02;
+}
+
 .smsto{
 	font-size: 20px;
 	margin: auto;
@@ -121,4 +125,27 @@ input:focus, textarea:focus {
 .form label {
 	margin-left: 10px;
 	color: #999999;
+}
+
+ul.social{
+	width: 300px;
+	list-style-type: circle;
+	padding-bottom: 50px;
+}
+
+ul.social li{
+	font-size: 15px;
+	font-style: bold;
+	width:150px;
+	float:left;
+}
+
+.error{
+	font-size:15px;
+	color:#a11c39;
+	font-weight:bold
+}
+
+#footer{
+	clear:both;
 }

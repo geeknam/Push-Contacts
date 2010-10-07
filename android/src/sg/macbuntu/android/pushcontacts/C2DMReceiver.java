@@ -23,6 +23,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,6 +40,7 @@ public class C2DMReceiver extends C2DMBaseReceiver {
     private static final String TAG = "DataMessageReceiver";
     private static final int TYPE_CONTACT = 0;
     private static final int TYPE_SMS     = 1;
+    private static final Uri THREAD_ID_CONTENT_URI = Uri.parse("content://mms-sms/threadID");
     
 
     public C2DMReceiver() {
@@ -76,8 +78,9 @@ public class C2DMReceiver extends C2DMBaseReceiver {
                generateNotification(context, TYPE_CONTACT,name, phone, contactUri);
            }
            else{
+        	   Long threadId = getThreadIdFromPhone(context, phone);
         	   sendSMS(phone, sms);
-        	   generateNotification(context, TYPE_SMS,name, phone, Uri.parse("sms:" + phone ));
+        	   generateNotification(context, TYPE_SMS, name, phone, Uri.parse("content://mms-sms/conversations/"+threadId));
            }
       
        }
@@ -99,11 +102,54 @@ public class C2DMReceiver extends C2DMBaseReceiver {
        return uri;
    }
    
-   private void sendSMS(String phone, String message){
-       //PendingIntent pi = PendingIntent.getActivity(this, 0,new Intent(this, SMS.class), 0);                
-       SmsManager sms = SmsManager.getDefault();
+   private void sendSMS(String phone, String message){              
+	   ContentValues values = new ContentValues();
+	   values.put("address", phone);
+	   values.put("body", message);
+	   getContentResolver().insert(Uri.parse("content://sms/sent"), values);
+
+	   SmsManager sms = SmsManager.getDefault();
        sms.sendTextMessage(phone, null, message, null, null);     
    }
+   
+   private static String getNameFromPhoneNumber(Context context, String phone) {
+       Cursor cursor = context.getContentResolver().query( Uri.withAppendedPath(Contacts.Phones.CONTENT_FILTER_URL, phone),
+    		   											   new String[] { Contacts.Phones.NAME }, 
+    		   											   null, null, null);
+       if (cursor != null) {
+    	   try {
+    		   if (cursor.getCount() > 0) {
+	               cursor.moveToFirst();
+	               String name = cursor.getString(0);
+	               Log.e("PUSH_CONTACTS","Found person: " + name);
+	               return name;
+               }
+           } finally { cursor.close(); }
+       }
+       return null;
+   }
+   
+   private static long getThreadIdFromPhone(Context context, String phone) {
+       
+       String THREAD_RECIPIENT_QUERY = "recipient";
+       
+       Uri.Builder uriBuilder = THREAD_ID_CONTENT_URI.buildUpon();
+       uriBuilder.appendQueryParameter(THREAD_RECIPIENT_QUERY, phone);
+       
+       long threadId = 0;
+       
+       Cursor cursor = context.getContentResolver().query(uriBuilder.build(), 
+    		   											  new String[] { "_id" },
+    		   											  null, null, null);
+       if (cursor != null) {
+    	   try {
+    		   if (cursor.moveToFirst()) {
+    			   threadId = cursor.getLong(0);
+               }
+           } finally { cursor.close(); }
+       }
+       return threadId;
+}
 
    private void generateNotification(Context context, int type, String name, String phone, Uri uri) {
 	   int icon = 0;
@@ -119,6 +165,9 @@ public class C2DMReceiver extends C2DMBaseReceiver {
 	   		}
 	   		case(TYPE_SMS):{
 		   	    icon = R.drawable.stat_notify_mms;
+		   	    if(getNameFromPhoneNumber(context, phone) != null){
+		   	    	phone = getNameFromPhoneNumber(context, phone);
+		   	    }
 		   	    message = "SMS sent to : " + phone;
 		   	    title = "SMS sent";
 		   	    break;

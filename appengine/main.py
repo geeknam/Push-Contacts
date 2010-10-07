@@ -124,7 +124,6 @@ def sendToPhone(self,data,email):
 		self.response.out.write('error_register')
 	else:
 	    registration_id = info.registration_id
-
 	    #Get authentication token pre-stored on datastore with ID 1
 	    #Alternatively, it's possible to store your authToken in a txt file and read from it (CTP implementation)
 	    info = Info.get_by_id(1)
@@ -156,11 +155,9 @@ class PushHandler(webapp.RequestHandler):
 	    taskqueue.add(url='/worker/%s' % (user), params={'phone': phone, 'sms': sms})
 
 class WorkerHandler(webapp.RequestHandler):
-
     pusher_api_key = "b83d2cada7ffe791153b"
     pusher_app_id  = "1718"
-    pusher_secret  = "c21d24f1c95430e0aacb"
-    
+    pusher_secret  = "c21d24f1c95430e0aacb" 
     def post(self, channel):
 	    pusher = pusherapp.Pusher(app_id=self.pusher_app_id, key=self.pusher_api_key, secret=self.pusher_secret)
 	    phone = self.request.get('phone')

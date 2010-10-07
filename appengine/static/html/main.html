@@ -5,34 +5,29 @@
 	    <link type="text/css" rel="stylesheet" href="/static/css/style.css" />
 		<link type="text/css" rel="stylesheet" href="/static/css/jquery.gritter.css" />
 		<link type="text/css" rel="stylesheet" href="/static/js/facebox/facebox.css" />
-		<link type="text/css" rel="stylesheet" href="/static/js/fancybox/jquery.fancybox-1.3.1.css" />
 		
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-		<script src="/static/js/facebox/facebox.js"></script>
-		<script src="/static/js/fancybox/jquery.fancybox-1.3.1.pack.js"></script>
-		<script src="http://www.google.com/jsapi"></script>
 		<script src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php"></script>
 		<script src="http://js.pusherapp.com/1.5/pusher.min.js"></script>
+		<script src="http://www.google.com/jsapi"></script>
+		
+		<script src="/static/js/facebox/facebox.js"></script>
 		<script src="/static/js/jquery.gritter.min.js"></script>
 		<script src="/static/js/gcontacts.js"></script>
+		
 				
 		<script>
 			FB.init("aa644770dd594258e84952ad117c5554", "/static/js/xd_receiver.htm");
 			
 			var pusher = new Pusher('b83d2cada7ffe791153b');
-			pusher.subscribe('emoinrp'); //{{ user }}
+			pusher.subscribe({{ user }}); 
 
 			pusher.bind('my_event', function(data) {
 			  	$.gritter.add({
-					// (string | mandatory) the heading of the notification
 					title: 'SMS from ' + data["phone"],
-					// (string | mandatory) the text inside the notification
 					text: data["sms"],
-					// (string | optional) the image to display on the left
 					image: '/static/images/sms_icon.png',
-					// (bool | optional) if you want it to fade out on its own or just sit there
 					sticky: false, 
-					// (int | optional) the time you want it to be alive for before fading out
 					time: ''
 				});
 			});
@@ -47,7 +42,7 @@
 			</div>
 			<span class="header">About the project:</span>
 			<ul>
-				<li>Allows users to save contacts to phone, send sms from the web browser/chrome extension</li>
+				<li>Allows users to save contacts to phone, send SMS from the web browser/chrome extension</li>
 				<li>Makes use of Android <a href="http://code.google.com/android/c2dm/index.html">C2DM</a> to push messages to Android devices</li>
 				<li>
 					Inspired by <a href="http://code.google.com/p/chrometophone/">ChromeToPhone</a> project 
@@ -71,16 +66,23 @@
 				</li>
 			</ul>
 			
+			<span class="header">Donations:</span>
+			<p>
+			<a href='http://www.pledgie.com/campaigns/13657'><img alt='Click here to lend your support to: Push-Contacts and make a donation at www.pledgie.com !' src='http://www.pledgie.com/campaigns/13657.png?skin_name=chrome' border='0' /></a>
+			</p>
 			<span class="header">Author:</span>
-			<ul>
+			<ul class="social" type="circle">
 				<li><a href="http://www.facebook.com/MacBuntu">Facebook</a></li>
 				<li><a href="http://twitter.com/NgoMinhNam">Twitter</a></li>
 				<li><a href="http://namdr0id.blogspot.com">Blog</a></li>
+				<li><a href="http://sg.linkedin.com/in/ngominhnam">LinkedIn</a></li>
 			</ul>
 			
+			<p>
 			<input type="submit" value="Comments" onClick="showCommentBox();" />
 			<input type="submit" value="Share on Facebook" onClick="share('http://www.facebook.com/sharer.php?u=http://pushcontacts.appspot.com');" />
 			<input type="submit" value="Share on Twitter" onClick="share('http://twitter.com/home?status=http://pushcontacts.appspot.com');" />
+			</p>
 		</div>
 		
 		<div id="content" class="box">
@@ -91,22 +93,27 @@
 			</div>
 			<div id="gcontacts">Loading contacts...</div>
 		</div>
+		
+		<div id="footer">
+		</div>
 
-		<!-- ********** HIDDEN ************ -->
-		<form id="smsbox" method="post" action="/sms">
+		<!-- ********** HIDDEN ************ method="post" action="/sms" -->
+		<form id="smsbox"> 
 	         <p class="smsto">SMS to <span id="contact"></span></p>
              <p><textarea name="sms" id="sms" rows="5" maxlength="250"></textarea></p>
              <p><input type="hidden" name="phone" id="phone" /></p>
-             <input type="submit" value="Send SMS" />
+			 <p class="error" id="error_sms">The message is blank !</p>
+             <input type="button" value="Send SMS" onClick="sendSms()"/>
 		</form>
 		
-		<form id="contactbox" method="get" action="/send">
+		<form id="contactbox">
 	         <p class="smsto">Create contact</p>
              <br>Contact Name: </br>
 			 <input type="text" name="name" /><br/>
 			 <br>Contact Phone: </br>
              <input type="text" name="phone" />
-             <p><input type="submit" value="Save To Phone" /></p>
+			<p class="error" id="error_contact">Fill in all details !</p>
+             <p><input type="button" value="Save To Phone" onclick="sendContact()" /></p>
 		</form>
 		
 		<div id="fbcomments">
@@ -114,5 +121,20 @@
 		</div>
 		<!-- ****************************** -->
 		
+		
+		<!-- *************** GOOGLE ANALYTICS *************** -->
+		<script type="text/javascript">
+
+		  var _gaq = _gaq || [];
+		  _gaq.push(['_setAccount', 'UA-18902372-1']);
+		  _gaq.push(['_trackPageview']);
+
+		  (function() {
+		    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		  })();
+
+		</script>
 	</body>
 </html
