@@ -5,7 +5,14 @@
 	<script src="main.js"></script>
 </head>
 <body>
-	<form id="contactFrom">
+	<div id="menu">
+		<ul>
+			<li id="menu_contact">Add Contact</li>
+			<li id="menu_sms">Send SMS</li>
+			<li id="menu_about">About</li>
+		</ul>
+	</div>
+	<div id="contact_form">
 		<table>
 			<tr>
 				<td class="label">Contact Name:</td>
@@ -20,8 +27,41 @@
 				<td><input type="submit" value="Save to Phone" onclick="save()"/></td>
 			</tr>
 		</table>
-	</form>
-	<div id="response">Add a new contact by filling the form</div>
-	<div id="footer">Developed by Ngo Minh Nam | <a href="http://pushcontacts.appspot.com" target="_blank">PushContacts Website</a></div>
+		<div id="response">Add a new contact by filling the form</div>
+	</div>
+	<div id="sms_form">
+		<table>
+			<tr>
+				<td class="label">Contact Name:</td>
+				<td><input type="text" name="sms_phone" id="sms_phone" /></td>
+			</tr>
+			<tr>
+				<td class="label">Message: </td>
+				<td><textarea name="sms" id="sms" rows="6" cols="20"></textarea></td>
+			</tr>
+			<tr>
+				<td>&nbsp;</td>
+				<td><input type="submit" value="Send SMS" onclick="sendsms()"/></td>
+			</tr>
+		</table>
+	</div>
+	<div id="about">
+		<table>
+			<tr>
+				<td>Developer :</td>
+				<td>emoinrp@gmail.com</td>
+			</tr>
+			<tr>
+				<td>Website:</td>
+				<td>http://pushcontacts.appspot.com</td>
+			</tr>
+			<tr>
+				<td>GTalk:</td>
+				<td>pushcontacts@appspot.com</td>
+			</tr>
+		</table>
+		<p align="center"><script type="text/javascript" src="http://www.ohloh.net/p/485197/widgets/project_thin_badge.js"></script></p>
+	</div>
+
 </body>
 </html>

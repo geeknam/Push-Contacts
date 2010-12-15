@@ -78,7 +78,7 @@ function generateContactList(contactEntry){
     // Iterate through the array of phones belonging to a single contact entry
     if (phoneNumbers.length != 0) {
      	for (var j = 0; j < phoneNumbers.length; j++) {
-			var phoneNumber = phoneNumbers[j].getValue().replace(/\s+/g,'').replace(/[\+\-]/,"").replace("-","");
+			var phoneNumber = phoneNumbers[j].getValue().replace(/\s+/g,'').replace("-","");
 			$("#gcontacts").append("<tr>");
 	  		$("#gcontacts").append("<td>"+name+"</td>");
 			$("#gcontacts").append("<td>"+phoneNumber+"</td>");

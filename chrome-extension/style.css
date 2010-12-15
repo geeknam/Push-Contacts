@@ -4,6 +4,8 @@ body {
   	overflow-x:hidden;
   	padding: 10px;
     background: -webkit-gradient(linear, 0 0, 0 30%, from(#dedede), to(white));
+    font-family: Rockwell, Georgia, "Times New Roman", Times, serif;
+	height: 200px;
 }
 
 input[type='submit']{
@@ -34,7 +36,7 @@ input[type='submit']:hover{
 	color: #fff;
 }
 
-input[type='text']{
+input[type='text'], textarea{
 	padding: 3px;
 	border: solid 1px #E5E5E5;
 	outline: 0;
@@ -47,7 +49,7 @@ input[type='text']{
 	-webkit-box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;
 }
 
-input:hover, input:focus{
+input:hover, input:focus, textarea:hover, textarea:focus{
 	border-color: #C9C9C9;
 	-webkit-box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 8px;
 }
@@ -66,6 +68,34 @@ a{
 	font-weight:bold;
 }
 
+#menu{
+	width: 96%;
+	margin-bottom: 20px;
+	font-size:14px;
+}
+
+#menu ul{
+	-webkit-border-radius: 5px; 
+	-webkit-box-shadow: 4px 4px 10px #232323;
+	list-style: none;
+	margin: auto;
+	background-color: black;
+	padding: 5px;
+}
+
+#menu li {
+	display: inline;
+	color: white;
+	font-weight: bold;
+	margin-left: 15px;
+}
+
+#menu li:hover{
+	color: #87cc04;
+	cursor: pointer;
+}
+
+
 
 #response{
 	color: #999999;
@@ -73,24 +103,16 @@ a{
 	font-size:12px;
 	font-weight:bold;
 	text-align:center;
-	margin-top: -5px;
+	margin-top:5px;
 	margin-bottom: 20px;
 }
 
-#contactForm{
-	float:left;
-}
-
-
-#footer{
+#about table{
+	font-size:12px;
+	font-weight: bold;
 	color: #999999;
-	font-family: 'ChunkFive Regular',Tahoma,Helvetica;
-	font-size:10px;
-	font-weight:bold;
-	margin-bottom: -15px;
-	text-align: center;
-	clear:both;
 }
+
 
 img {
   border:3px solid white;

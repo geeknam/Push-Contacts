@@ -6,32 +6,6 @@
 		<link type="text/css" rel="stylesheet" href="/static/css/jquery.gritter.css" />
 		<link type="text/css" rel="stylesheet" href="/static/js/facebox/facebox.css" />
 		
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-		<script src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php"></script>
-		<script src="http://js.pusherapp.com/1.5/pusher.min.js"></script>
-		<script src="http://www.google.com/jsapi"></script>
-		
-		<script src="/static/js/facebox/facebox.js"></script>
-		<script src="/static/js/jquery.gritter.min.js"></script>
-		<script src="/static/js/gcontacts.js"></script>
-		
-				
-		<script>
-			FB.init("aa644770dd594258e84952ad117c5554", "/static/js/xd_receiver.htm");
-			
-			var pusher = new Pusher('b83d2cada7ffe791153b');
-			pusher.subscribe({{ user }}); 
-
-			pusher.bind('my_event', function(data) {
-			  	$.gritter.add({
-					title: 'SMS from ' + data["phone"],
-					text: data["sms"],
-					image: '/static/images/sms_icon.png',
-					sticky: false, 
-					time: ''
-				});
-			});
-		</script>
 	</head>
 	<body>
 		<img src="/static/css/blank.png" style="position:absolute; top: -1000px;"/>
@@ -40,7 +14,7 @@
 				<img src ="/static/css/icon.png" width="60px" /> 
 				<span style="font-size: 30px; color:#91bd09; float:right;margin-right:15px;text-shadow: 0px 1px 2px #749a02;">Android Push Contacts</span>
 			</div>
-			<span class="header">About the project:</span>
+			<span class="header">About the project: </span>
 			<ul>
 				<li>Allows users to save contacts to phone, send SMS from the web browser/chrome extension</li>
 				<li>Makes use of Android <a href="http://code.google.com/android/c2dm/index.html">C2DM</a> to push messages to Android devices</li>
@@ -51,6 +25,7 @@
 					Fully open sourced, you can clone the source code from
 					<a href="http://github.com/macbuntu/Push-Contacts">GitHub</a>
 				</li>
+				<script type="text/javascript" src="http://www.ohloh.net/p/485197/widgets/project_thin_badge.js"></script>
 			</ul>
 			
 			<span class="header">How to use:</span>
@@ -61,6 +36,8 @@
 					(Android 2.2 is required)
 				</li>
 				<li>Register the device with downloaded application</li>
+				<li>Use the panel to your right to send SMS</li>
+				<li>Add <b>pushcontacts@appspot.com</b> to your GTalk to receive incoming SMS</li>
 				<li>
 					You can additionally install <a href="http://goo.gl/doIg">Chrome Extension</a>
 				</li>
@@ -121,6 +98,34 @@
 		</div>
 		<!-- ****************************** -->
 		
+		
+		
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+		<script src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php"></script>
+		<script src="http://js.pusherapp.com/1.5/pusher.min.js"></script>
+		<script src="http://www.google.com/jsapi"></script>
+		
+		<script src="/static/js/facebox/facebox.js"></script>
+		<script src="/static/js/jquery.gritter.min.js"></script>
+		<script src="/static/js/gcontacts.js"></script>
+		
+				
+		<script>
+			FB.init("aa644770dd594258e84952ad117c5554", "/static/js/xd_receiver.htm");
+			
+			var pusher = new Pusher('b83d2cada7ffe791153b');
+			pusher.subscribe({{ user }}); 
+
+			pusher.bind('my_event', function(data) {
+			  	$.gritter.add({
+					title: 'SMS from ' + data["phone"],
+					text: data["sms"],
+					image: '/static/images/sms_icon.png',
+					sticky: false, 
+					time: ''
+				});
+			});
+		</script>
 		
 		<!-- *************** GOOGLE ANALYTICS *************** -->
 		<script type="text/javascript">

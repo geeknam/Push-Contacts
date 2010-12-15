@@ -1,10 +1,42 @@
-server_url = "http://pushcontacts.appspot.com/send";
+contact_url = "http://pushcontacts.appspot.com/send";
+sms_url     = "http://pushcontacts.appspot.com/sms";
+
+$(document).ready(function(){
+	
+	showOnly("#contact_form");
+	
+	$("#menu_contact").click(function(){
+		showOnly("#contact_form");
+	});
+	
+	$("#menu_sms").click(function(){
+		showOnly("#sms_form");
+	});
+	
+	$("#menu_about").click(function(){
+		showOnly("#about");
+	});
+
+});
+
+function showOnly(div){
+	var all_divs = ["#sms_form","#contact_form","#about"];
+	
+	for(i=0; i<all_divs.length; i++){
+		if(all_divs[i] == div){
+			$(div).show();
+		}
+		else{
+			$(all_divs[i]).hide();
+		}
+	}
+}
 
 function save(){
 	var contact_name = encodeURIComponent($("#contact_name").val());
 	var phone_number = encodeURIComponent($("#phone_number").val());
 	
-	get_url = server_url+"?name="+contact_name+"&phone="+phone_number;
+	get_url = contact_url+"?name="+contact_name+"&phone="+phone_number;
 	if(contact_name == '' || phone_number == ''){
 		$("#response").hide().html("Fill in all blanks").fadeIn(1000);
 	}
@@ -30,6 +62,10 @@ function save(){
 			}	    
 		});
 	}
+}
+
+function sendsms(){
+
 }
 
 function isNumber(n) {

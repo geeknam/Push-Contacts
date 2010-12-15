@@ -1,7 +1,8 @@
 {
   "name": "Push Contacts Chrome Extension",
   "version": "1.0.2",
-  "description": "Create new contacts on your Android phone with a Chrome browser",
+  "description": "Send/receive SMS on your Android phone with a Chrome browser",
+  "background_page": "background.html",
   "browser_action": {
     "default_icon": "icon.png",
     "popup": "popup.html"
@@ -9,6 +10,6 @@
   "icons": { "48": "icon.png",
           	 "128": "icon.png" },
   "permissions": [
-    "tabs", "http://*/*", "https://*/*"
+    "tabs", "http://*/*", "https://*/*","notifications"
   ]
 }

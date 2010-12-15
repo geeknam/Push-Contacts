@@ -31,9 +31,9 @@ from google.appengine.api import users
 from google.appengine.api import urlfetch
 from google.appengine.ext.webapp.template import render
 from google.appengine.api.labs import taskqueue
+from google.appengine.api import xmpp
 
-import urllib
-import pusherapp
+import urllib, pusherapp, logging
 
 class Info(db.Model):
     registration_id = db.StringProperty(multiline=True)
@@ -152,7 +152,15 @@ class PushHandler(webapp.RequestHandler):
 	    user = self.request.get('user')
 	    phone = self.request.get('phone')
 	    sms   = self.request.get('sms')
+	    user_address = '%s@gmail.com' % (user)
+	    chat_message_sent = False
+	    if xmpp.get_presence(user_address):
+	        msg = "SMS from %s : %s" % (phone,sms)
+	        status_code = xmpp.send_message(user_address, msg)
+	        chat_message_sent = (status_code != xmpp.NO_ERROR)
 	    taskqueue.add(url='/worker/%s' % (user), params={'phone': phone, 'sms': sms})
+	    
+	    logging.debug(chat_message_sent)
 
 class WorkerHandler(webapp.RequestHandler):
     pusher_api_key = "b83d2cada7ffe791153b"
@@ -168,6 +176,7 @@ class WorkerHandler(webapp.RequestHandler):
 
 	        
 def main():
+	
     application = webapp.WSGIApplication([('/', MainHandler),
                                           ('/register', RegisterHandler),
                                           ('/unregister', UnregisterHandler),
