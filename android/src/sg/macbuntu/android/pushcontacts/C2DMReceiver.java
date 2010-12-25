@@ -149,7 +149,7 @@ public class C2DMReceiver extends C2DMBaseReceiver {
            } finally { cursor.close(); }
        }
        return threadId;
-}
+	}
 
    private void generateNotification(Context context, int type, String name, String phone, Uri uri) {
 	   int icon = 0;

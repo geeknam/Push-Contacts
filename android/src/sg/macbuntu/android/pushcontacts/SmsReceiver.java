@@ -11,13 +11,18 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Contacts;
 import android.telephony.SmsMessage;
+import android.util.Log;
 import android.widget.Toast;
 
 public class SmsReceiver extends BroadcastReceiver{
@@ -30,6 +35,7 @@ public class SmsReceiver extends BroadcastReceiver{
         SmsMessage[] msgs = null;
         
         String contact = "";
+        String sender="";
         String body = "";
         String account = "";
         
@@ -43,11 +49,29 @@ public class SmsReceiver extends BroadcastReceiver{
             contact = msgs[0].getOriginatingAddress();                     
             body    = msgs[0].getMessageBody().toString();       
             account = getAccount(context);
+            sender  = getNameFromPhoneNumber(context, contact);
             
             Toast.makeText(context, "SMS has been pushed", Toast.LENGTH_LONG).show();
-            postData(account, contact, body);
+            postData(account, contact, body, sender);
         } 
 	}
+	
+    private static String getNameFromPhoneNumber(Context context, String phone) {
+        Cursor cursor = context.getContentResolver().query( Uri.withAppendedPath(Contacts.Phones.CONTENT_FILTER_URL, phone),
+    		   											    new String[] { Contacts.Phones.NAME }, 
+    		   											    null, null, null);
+        if (cursor != null) {
+    	    try {
+    		    if (cursor.getCount() > 0) {
+	                cursor.moveToFirst();
+	                String name = cursor.getString(0);
+	                Log.e("PUSH_CONTACTS","Pushed name: " + name);
+	                return name;
+                }
+            } finally { cursor.close(); }
+        }
+        return null;
+    }
 	
 	private static String getAccount(Context context){
 		SharedPreferences settings = Prefs.get(context);
@@ -69,18 +93,19 @@ public class SmsReceiver extends BroadcastReceiver{
 		return exist;
 	}
 	
-	private static void postData(String user, String phone, String sms) {
+	private static void postData(String user, String phone, String sms, String sender) {
 
 	    HttpClient httpclient = new DefaultHttpClient();
 	    HttpPost httppost = new HttpPost(PUSH_URL);
 
 	    try {
 	        // Add your data
-	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
+	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(4);
 	        nameValuePairs.add(new BasicNameValuePair("user", user));
+	        nameValuePairs.add(new BasicNameValuePair("sender", sender));
 	        nameValuePairs.add(new BasicNameValuePair("phone", phone));
 	        nameValuePairs.add(new BasicNameValuePair("sms", sms));
-	        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+	        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs, HTTP.UTF_8));
 
 	        // Execute HTTP Post Request
 	        httpclient.execute(httppost);

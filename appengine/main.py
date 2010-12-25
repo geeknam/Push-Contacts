@@ -32,21 +32,25 @@ from google.appengine.api import urlfetch
 from google.appengine.ext.webapp.template import render
 from google.appengine.api.labs import taskqueue
 from google.appengine.api import xmpp
+from google.appengine.ext.webapp import xmpp_handlers
 
 import urllib, pusherapp, logging
 
 class Info(db.Model):
     registration_id = db.StringProperty(multiline=True)
 
+class Incoming(db.Model):
+    last_sender = db.StringProperty(multiline=True)
+
 class MainHandler(webapp.RequestHandler):
     def get(self):
-		user = users.get_current_user()
-		if not user:
-			self.redirect(users.create_login_url(self.request.uri))
-		else:
-			tmpl = path.join(path.dirname(__file__), 'static/html/main.html')
-			context = {'user': user.nickname()}
-			self.response.out.write(render(tmpl,context))
+        user = users.get_current_user()
+        if not user:
+            self.redirect(users.create_login_url(self.request.uri))
+        else:
+            tmpl = path.join(path.dirname(__file__), 'static/html/main.html')
+            context = {'user': user.nickname()}
+            self.response.out.write(render(tmpl,context))
 
 class RegisterHandler(webapp.RequestHandler):
     def get(self):
@@ -58,11 +62,11 @@ class RegisterHandler(webapp.RequestHandler):
         else:
             user = users.get_current_user()
             if user:
-		        #Store registration_id and an unique key_name with email value
-	            info = Info(key_name=user.email())
-	            info.registration_id = devregid   
-	            info.put()
-	            self.response.out.write('OK')
+                #Store registration_id and an unique key_name with email value
+                info = Info(key_name=user.email())
+                info.registration_id = devregid   
+                info.put()
+                self.response.out.write('OK')
             else:
                 self.response.out.write('Not authorized')
 
@@ -74,27 +78,32 @@ class UnregisterHandler(webapp.RequestHandler):
             self.error(400)
             self.response.out.write('Must specify devregid')
         else:
-	        user = users.get_current_user()
-	        if user:
-		        #Remove entry with the associated email value
-	            info =  Info.get_by_key_name(user.email())
-	            info.delete()
-	            self.response.out.write('OK')
-	        else:
-		        self.response.out.write('Not authorized') 
+            user = users.get_current_user()
+            if user:
+                #Remove entry with the associated email value
+                info =  Info.get_by_key_name(user.email())
+                info.delete()
+                self.response.out.write('OK')
+            else:
+                self.response.out.write('Not authorized') 
 
 class SmsHandler(webapp.RequestHandler):
     def post(self):
         phone_number = self.request.get('phone')
         sms = self.request.get('sms')
+        if isinstance(sms, str):
+            sms = unicode(sms, 'utf-8')
+        else: 
+            sms = unicode(sms)
+        sms = sms.encode('utf-8')
         
         user = users.get_current_user()
         if user:
-	        data = {"data.sms" : sms,
-	                "data.phone_number" : phone_number}
-	        sendToPhone(self,data, user.email())
+            data = {"data.sms" : sms,
+                    "data.phone_number" : phone_number}
+            sendToPhone(self,data, user.email())
         else:
-	        self.redirect(users.create_login_url(self.request.uri))
+            self.redirect(users.create_login_url(self.request.uri))
 
 class SendHandler(webapp.RequestHandler):
     def get(self):
@@ -109,81 +118,108 @@ class SendHandler(webapp.RequestHandler):
         else:
             user = users.get_current_user()
             if user:
-	            #Send the message to C2DM server
+                #Send the message to C2DM server
                 data = {"data.contact_name" : contact_name,
                         "data.phone_number" : phone_number}
                 sendToPhone(self,data, user.email())
             else:
-	            #User is not logged in
+                #User is not logged in
                 self.redirect(users.create_login_url(self.request.uri))
 
 #Helper method to send params to C2DM server
 def sendToPhone(self,data,email):
-	info = Info.get_by_key_name(email)
-	if not info:
-		self.response.out.write('error_register')
-	else:
-	    registration_id = info.registration_id
-	    #Get authentication token pre-stored on datastore with ID 1
-	    #Alternatively, it's possible to store your authToken in a txt file and read from it (CTP implementation)
-	    info = Info.get_by_id(1)
-	    authToken = info.registration_id
-	    form_fields = {
-	        "registration_id": registration_id,
-	        "collapse_key": hash(email), #collapse_key is an arbitrary string (implement as you want)
-	    }
-	    form_fields.update(data)
-	    form_data = urllib.urlencode(form_fields)
-	    url = "https://android.clients.google.com/c2dm/send"
+    info = Info.get_by_key_name(email)
+    if not info:
+        self.response.out.write('error_register')
+    else:
+        registration_id = info.registration_id
+        #Get authentication token pre-stored on datastore with ID 1
+        #Alternatively, it's possible to store your authToken in a txt file and read from it (CTP implementation)
+        info = Info.get_by_id(1)
+        authToken = info.registration_id
+        form_fields = {
+            "registration_id": registration_id,
+            "collapse_key": hash(email), #collapse_key is an arbitrary string (implement as you want)
+        }
+        form_fields.update(data)
+        form_data = urllib.urlencode(form_fields)
+        url = "https://android.clients.google.com/c2dm/send"
     
-	    #Make a POST request to C2DM server
-	    result = urlfetch.fetch(url=url,
-	                            payload=form_data,
-	                            method=urlfetch.POST,
-	                            headers={'Content-Type': 'application/x-www-form-urlencoded',
-	                                     'Authorization': 'GoogleLogin auth=' + authToken})
-	    if result.status_code == 200:
-		    self.response.out.write("OK")
-	    else:
-		    self.response.out.write('error_c2dm')
+        #Make a POST request to C2DM server
+        result = urlfetch.fetch(url=url,
+                                payload=form_data,
+                                method=urlfetch.POST,
+                                headers={'Content-Type': 'application/x-www-form-urlencoded',
+                                         'Authorization': 'GoogleLogin auth=' + authToken})
+        if result.status_code == 200:
+            self.response.out.write("OK")
+        else:
+            self.response.out.write('error_c2dm')
 
 class PushHandler(webapp.RequestHandler):
     def post(self):
-	    user = self.request.get('user')
-	    phone = self.request.get('phone')
-	    sms   = self.request.get('sms')
-	    user_address = '%s@gmail.com' % (user)
-	    chat_message_sent = False
-	    if xmpp.get_presence(user_address):
-	        msg = "SMS from %s : %s" % (phone,sms)
-	        status_code = xmpp.send_message(user_address, msg)
-	        chat_message_sent = (status_code != xmpp.NO_ERROR)
-	    taskqueue.add(url='/worker/%s' % (user), params={'phone': phone, 'sms': sms})
-	    
-	    logging.debug(chat_message_sent)
+        user  = self.request.get('user')
+        sender= self.request.get('sender')
+        phone = self.request.get('phone')
+        sms   = self.request.get('sms')
+        if isinstance(sms, str):
+            sms = unicode(sms, 'utf-8')
+        else: 
+            sms = unicode(sms)
+        sms = sms.encode('utf-8')
+
+        if user:
+            user_address = '%s@gmail.com' % (user)
+            incoming = Incoming(key_name=user_address)
+            incoming.last_sender = phone   
+            incoming.put()
+
+            chat_message_sent = False
+            if xmpp.get_presence(user_address):
+                msg = "%s : %s" % (sender,sms)
+                status_code = xmpp.send_message(user_address, msg)
+                chat_message_sent = (status_code != xmpp.NO_ERROR)
+
+            taskqueue.add(url='/worker/%s' % (user), params={'sender': sender, 'sms': sms})
+            logging.debug(chat_message_sent)
+
 
 class WorkerHandler(webapp.RequestHandler):
     pusher_api_key = "b83d2cada7ffe791153b"
     pusher_app_id  = "1718"
     pusher_secret  = "c21d24f1c95430e0aacb" 
     def post(self, channel):
-	    pusher = pusherapp.Pusher(app_id=self.pusher_app_id, key=self.pusher_api_key, secret=self.pusher_secret)
-	    phone = self.request.get('phone')
-	    sms   = self.request.get('sms')
-	
-	    data = {'phone': phone, 'sms': sms}
-	    result = pusher[channel].trigger('my_event', data=data)    
+        pusher = pusherapp.Pusher(app_id=self.pusher_app_id, key=self.pusher_api_key, secret=self.pusher_secret)
+        phone = self.request.get('phone')
+        sms   = self.request.get('sms')
+    
+        data = {'phone': phone, 'sms': sms}
+        result = pusher[channel].trigger('my_event', data=data)    
 
-	        
+class XMPPHandler(xmpp_handlers.CommandHandler):
+    def text_message(self, message):
+        idx  = message.sender.index('/')
+        user = message.sender[0:idx]
+        logging.debug(user)
+
+        incoming = Incoming.get_by_key_name(user)
+        sender   = incoming.last_sender
+        sms      = message.arg
+
+        data = {"data.sms" : sms,
+                "data.phone_number" : sender}
+        sendToPhone(self, data, user)
+            
 def main():
-	
+    
     application = webapp.WSGIApplication([('/', MainHandler),
                                           ('/register', RegisterHandler),
                                           ('/unregister', UnregisterHandler),
                                           ('/send', SendHandler),
                                           ('/sms', SmsHandler),
                                           ('/push', PushHandler),
-                                          (r'/worker/(.*)', WorkerHandler)
+                                          (r'/worker/(.*)', WorkerHandler),
+                                          ('/_ah/xmpp/message/chat/', XMPPHandler)
                                           ],
                                           debug=True)
     util.run_wsgi_app(application)

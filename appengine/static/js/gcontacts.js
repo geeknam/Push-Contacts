@@ -10,7 +10,7 @@ $(document).ready(function() {
 	
 	$("#search").keyup(function(){
 		clearTimeout(t);
-		t = setTimeout('getMyContacts($("#search").val())',1000);
+		t = setTimeout('searchContacts($("#search").val())',100);
 	});
 	
 });
@@ -20,56 +20,77 @@ google.load("gdata", "1.x");
 google.setOnLoadCallback(initFunc);
 
 var contactsService;
+var contactsFeedUri = 'http://www.google.com/m8/feeds/contacts/default/full';
+var scope = 'http://www.google.com/m8/feeds';
+var entries;
+var token;
+
+function getLoginLink(){
+	if(token == "")
+		return '<a href="javascript:logMeIn()">Login</a>';
+	else
+		return '<a href="javascript:logMeOut()">Logout</a>';
+}
+
+function logMeIn() {
+	token = google.accounts.user.login(scope);
+	if(token != ""){
+		getMyContacts();		
+	}
+}
+
+function logMeOut(){
+	google.accounts.user.logout();
+ 	location.reload(true);
+}
 
 function setupContactsService() {
   	contactsService = new google.gdata.contacts.ContactsService('MacbuntuInc-PushContacts-1.0');
 }
 
-function logMeIn() {
-	var scope = 'http://www.google.com/m8/feeds';
-  	var token = google.accounts.user.login(scope);
+function initFunc() {
+	setupContactsService();
+	if(token != ""){
+		getMyContacts();
+	}
 }
 
-function getMyContacts(search){
+function getMyContacts() {
+  	var query = new google.gdata.contacts.ContactQuery(contactsFeedUri);
+  	query.setMaxResults(1000);
+  
+  	contactsService.getContactFeed(query, handleContactsFeed, handleError);
+}
+
+var handleContactsFeed = function(result) {
+  	entries = result.feed.entry;
+	searchContacts();
+}
+
+var handleError = function(error) {
+  $("#gcontacts").html("<img src='/static/css/error.png' width='30px' style='float:left; margin-top:-3px'/><span class='error'>Login to retrieve contacts</span>");
+}
+
+function searchContacts(search){
 	$("#gcontacts").html("");
-	
-	var feedUri = 'http://www.google.com/m8/feeds/contacts/default/full';
-	var query = new google.gdata.contacts.ContactQuery(feedUri);
+	$("#gcontacts").append("<table>");
+  	// Iterate through the array of contact entries
+  	for (var i = 0; i < entries.length; i++) {
+    	var contactEntry = entries[i];
+    	var name = contactEntry.getTitle().getText();
 
-	// Set the maximum of the result set to be 500
-	query.setMaxResults(500);
-
-	// callback method to be invoked when getContactFeed() returns data
-	var callback = function(result) {
-	  	// An array of contact entries
-		var entries = result.feed.entry;
-		$("#gcontacts").append("<table>");
-	  	// Iterate through the array of contact entries
-	  	for (var i = 0; i < entries.length; i++) {
-	    	var contactEntry = entries[i];
-        	var name = contactEntry.getTitle().getText();
-
-			if(search == null){
-				if(name != ""){
-					generateContactList(contactEntry);
-		        }
-			}
-			else{
-		        if(name != "" && name.toLowerCase().indexOf(search.toLowerCase()) != -1){
-					generateContactList(contactEntry)
-		        }
-			}
-	    }
-		$("#gcontacts").append("</table>");
-	}//callback
-
-	// Error handler
-	var handleError = function(error) {
-	  $("#gcontacts").html("<img src='/static/css/error.png' width='30px' style='float:left; margin-top:-3px'/><span class='error'>Login to retrieve contacts </span>");
-	}
-
-	// Submit the request using the contacts service object
-	contactsService.getContactFeed(query, callback, handleError);	
+		if(search == null){
+			if(name != ""){
+				generateContactList(contactEntry);
+	        }
+		}
+		else{
+	        if(name != "" && name.toLowerCase().indexOf(search.toLowerCase()) != -1){
+				generateContactList(contactEntry);
+	        }
+		}
+    }
+	$("#gcontacts").append("</table>");
 }
 
 function generateContactList(contactEntry){
@@ -88,10 +109,6 @@ function generateContactList(contactEntry){
     }
 }
 
-function initFunc() {
-  	setupContactsService();
-  	getMyContacts();
-}
 
 function fillData(contact,phone){
 	$("#contact").html(contact);

@@ -73,11 +73,10 @@ input[type='button'], input[type='submit']{
 	border-style:none;
 	background: #91bd09 url(alert-overlay.png) repeat-x;
 	display: inline-block;
-	padding: 5px 10px 6px;
+	padding: 6px;
 	color: #fff;
 	text-decoration: none;
 	font-weight: bold;
-	line-height: 1;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	-moz-box-shadow: 0 1px 3px #999;
@@ -119,7 +118,9 @@ textarea {
 input:hover, textarea:hover,
 input:focus, textarea:focus {
 	border-color: #C9C9C9;
+	box-shadow: rgba(0,0,0, 0.15) 0px 0px 8px;
 	-webkit-box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 8px;
+	-moz-box-shadow: rgba(0,0,0, 0.15) 0px 0px 8px;
 }
 
 .form label {
