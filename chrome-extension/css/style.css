@@ -1,6 +1,6 @@
 body {
-  	min-width:300px;
-	min-height:60px;
+  	min-width:400px;
+	min-height:150px;
   	overflow-x:hidden;
   	padding: 10px;
     background: -webkit-gradient(linear, 0 0, 0 30%, from(#dedede), to(white));
@@ -10,7 +10,7 @@ body {
 
 input[type='submit']{
 	border-style:none;
-	background: #91bd09 url(alert-overlay.png) repeat-x;
+	background: #91bd09 url(images/alert-overlay.png) repeat-x;
 	display: inline-block;
 	padding: 5px 10px 6px;
 	color: #fff;
@@ -41,7 +41,7 @@ input[type='text'], textarea{
 	border: solid 1px #E5E5E5;
 	outline: 0;
 	font: normal 13px/100% Verdana, Tahoma, sans-serif;
-	width: 170px;
+	width: 250px;
 	background: -webkit-gradient(linear, left top, left 25, from(#FFFFFF), color-stop(4%, #EEEEEE), to(#FFFFFF));
 	background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
 	box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;
@@ -95,9 +95,7 @@ a{
 	cursor: pointer;
 }
 
-
-
-#response{
+#contact_response, #sms_response{
 	color: #999999;
 	font-family: 'ChunkFive Regular',Tahoma,Helvetica;
 	font-size:12px;

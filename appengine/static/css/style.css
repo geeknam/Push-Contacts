@@ -7,7 +7,6 @@ body {
 }
 
 .box {
-	margin: 25px;
 	padding: 20px 30px;
 	border: 1px solid #D2D2D2;
 	-moz-box-shadow: 0 0 30px #CCC;
@@ -18,22 +17,44 @@ body {
 	background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 15px);
 }
 
+#wrapper{
+	width: 95%;
+	padding:25px;
+}
+
 #guide{
 	float: left;
-	width: 400px;
+	width: 35%;
+	margin-right:5%;
+}
+
+#content{
+	float: left;
+	width: 40%;
+}
+
+#appimg{
+	width: 18%;
+}
+
+#appname{
+	font-size: 30px;
+	color:#91bd09; 
+	float:right;
+	margin-right:15px;
+	text-shadow: 0px 1px 2px #749a02;
 }
 
 .header{
 	font-size:22px;
 }
 
-#content{
-	float: right;
-	width: 600px;
+.defaultTextActive { 
+	color: #a1a1a1; 
 }
 
+
 #searchspan{
-	margin-left: 100px;
 	font-size: 15px;
 	font-weight: bold;
 }

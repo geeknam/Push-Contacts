@@ -1,67 +1,142 @@
 <html>
 <head>
-	<link type="text/css" href="style.css" rel="stylesheet" />
-	<script src="jquery.js"></script>
-	<script src="main.js"></script>
-</head>
-<body>
-	<div id="menu">
-		<ul>
-			<li id="menu_contact">Add Contact</li>
-			<li id="menu_sms">Send SMS</li>
-			<li id="menu_about">About</li>
-		</ul>
-	</div>
-	<div id="contact_form">
-		<table>
-			<tr>
-				<td class="label">Contact Name:</td>
-				<td><input type="text" name="contact_name" id="contact_name" /></td>
-			</tr>
-			<tr>
-				<td class="label">Phone Number:</td>
-				<td><input type="text" name="phone_number" id="phone_number" maxlength="10"/></td>
-			</tr>
-			<tr>
-				<td>&nbsp;</td>
-				<td><input type="submit" value="Save to Phone" onclick="save()"/></td>
-			</tr>
-		</table>
-		<div id="response">Add a new contact by filling the form</div>
-	</div>
-	<div id="sms_form">
-		<table>
-			<tr>
-				<td class="label">Contact Name:</td>
-				<td><input type="text" name="sms_phone" id="sms_phone" /></td>
-			</tr>
-			<tr>
-				<td class="label">Message: </td>
-				<td><textarea name="sms" id="sms" rows="6" cols="20"></textarea></td>
-			</tr>
-			<tr>
-				<td>&nbsp;</td>
-				<td><input type="submit" value="Send SMS" onclick="sendsms()"/></td>
-			</tr>
-		</table>
-	</div>
-	<div id="about">
-		<table>
-			<tr>
-				<td>Developer :</td>
-				<td>emoinrp@gmail.com</td>
-			</tr>
-			<tr>
-				<td>Website:</td>
-				<td>http://pushcontacts.appspot.com</td>
-			</tr>
-			<tr>
-				<td>GTalk:</td>
-				<td>pushcontacts@appspot.com</td>
-			</tr>
-		</table>
-		<p align="center"><script type="text/javascript" src="http://www.ohloh.net/p/485197/widgets/project_thin_badge.js"></script></p>
-	</div>
+	<link type="text/css" href="css/style.css" rel="stylesheet" />
+	<link type="text/css" href="css/autocomplete.css" rel="stylesheet" />
+	
+	<script src="js/jquery.js"></script>
+	<script src="js/autocompleter.js"></script>
+	<script src="js/main.js"></script>
+	
+	<script type="text/javascript">
+	
+		function fillAutocomplete(data){
+			$("#sms_phone").autocompleteArray(data,
+				{
+					delay:10,
+					minChars:1,
+					matchSubset:1,
+					onItemSelect:selectItem,
+					onFindValue:findValue,
+					autoFill:true,
+					formatItem:formatItem,
+					maxItemsToShow:10
+				}
+			);
+		}
+		
+		
+		function findValue(li) {
+			if( li == null ) return alert("No match!");
+			if( !!li.extra ) var sValue = li.extra[0];
+			else var sValue = li.selectValue;
+			$("#sms_phone").val(sValue);
+		}
 
+		function selectItem(li) {
+			findValue(li);
+		}
+
+		function formatItem(row) {
+			return row[0] + " ("+row[1]+")";
+		}
+		
+		
+		function onContacts(text, xhr) {
+        	contacts = [];
+        	var data = JSON.parse(text);
+        	for (var i = 0, entry; entry = data.feed.entry[i]; i++) {
+          		var contact = {
+            		'name' : entry['title']['$t']
+          		};
+
+          		if (entry['gd$phoneNumber']) {
+            		var numbers = entry['gd$phoneNumber'];
+            		for (var j = 0, number; number = numbers[j]; j++) {
+						if (number['$t'] != null && number['$t'] != '') {
+							var fix_num = number['$t'].replace(/\s+/g,'');
+							var tmp = [contact['name'], fix_num]
+	                        //contacts.push("[" + contact['name'] + "] " + number['$t']);
+							contacts.push(tmp);
+	                    }
+            		}
+          		}
+        	}	
+			fillAutocomplete(contacts);
+      	};
+
+		function init(){
+			chrome.extension.getBackgroundPage().getContacts(onContacts);			
+		}
+
+	</script>
+</head>
+
+<body onload="init();">
+	
+	<div id="content">
+		<img src="images/alert_overlay.png" style="position:absolute; top: -1000px;"/>
+		<!------------ MENU ------------>
+		<div id="menu">
+			<ul>
+				<li id="menu_sms">Send SMS</li>
+				<li id="menu_contact">Add Contact</li>
+				<li id="menu_about">About</li>
+			</ul>
+		</div>
+		<!------------ CONTACTS FORM ------------>
+		<div id="contact_form">
+			<table>
+				<tr>
+					<td class="label">Contact Name:</td>
+					<td><input type="text" name="contact_name" id="contact_name" /></td>
+				</tr>
+				<tr>
+					<td class="label">Phone Number:</td>
+					<td><input type="text" name="phone_number" id="phone_number" maxlength="10"/></td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td><input type="submit" value="Save to Phone" onclick="save()"/></td>
+				</tr>
+			</table>
+			<div id="contact_response">Add a new contact by filling the form</div>
+		</div>
+		<!------------ SMS FORM ------------>
+		<div id="sms_form">
+			<table>
+				<tr>
+					<td class="label">To:</td>
+					<td><input type="text" name="sms_phone" id="sms_phone" /></td>
+				</tr>
+				<tr>
+					<td class="label">Message: </td>
+					<td><textarea name="sms" id="sms" rows="6" cols="20"></textarea></td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td><input type="submit" value="Send SMS" onclick="sendsms()"/></td>
+				</tr>
+			</table>
+			<div id="sms_response">Compose a new message SMS</div>
+		</div>
+		<!------------ ABOUT FORM ------------>
+		<div id="about">
+			<table>
+				<tr>
+					<td>Developer :</td>
+					<td>emoinrp@gmail.com</td>
+				</tr>
+				<tr>
+					<td>Website:</td>
+					<td>http://pushcontacts.appspot.com</td>
+				</tr>
+				<tr>
+					<td>GTalk:</td>
+					<td>pushcontacts@appspot.com</td>
+				</tr>
+			</table>
+			<p align="center"><script type="text/javascript" src="http://www.ohloh.net/p/485197/widgets/project_thin_badge.js"></script></p>
+		</div>
+	</div>
 </body>
 </html>

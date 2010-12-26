@@ -4,11 +4,11 @@
   "description": "Send/receive SMS on your Android phone with a Chrome browser",
   "background_page": "background.html",
   "browser_action": {
-    "default_icon": "icon.png",
+    "default_icon": "images/icon.png",
     "popup": "popup.html"
   },
-  "icons": { "48": "icon.png",
-          	 "128": "icon.png" },
+  "icons": { "48": "images/icon.png",
+          	 "128": "images/icon.png" },
   "permissions": [
     "tabs", "http://*/*", "https://*/*","notifications"
   ]
