@@ -1,4 +1,3 @@
-
 var t;
 $(document).ready(function() {
 	$('a[rel*=facebox]').facebox() 
@@ -6,6 +5,7 @@ $(document).ready(function() {
 	$("#error_sms").hide();
 	$("#error_contact").hide();
 	$("#contactbox").hide();
+	$("#demovideo").hide();
 	$("#fbcomments").hide();
 	
 	$("#search").keyup(function(){
@@ -24,13 +24,6 @@ var contactsFeedUri = 'http://www.google.com/m8/feeds/contacts/default/full';
 var scope = 'http://www.google.com/m8/feeds';
 var entries;
 var token;
-
-function getLoginLink(){
-	if(token == "")
-		return '<a href="javascript:logMeIn()">Login</a>';
-	else
-		return '<a href="javascript:logMeOut()">Logout</a>';
-}
 
 function logMeIn() {
 	token = google.accounts.user.login(scope);
@@ -96,6 +89,7 @@ function searchContacts(search){
 function generateContactList(contactEntry){
 	var phoneNumbers = contactEntry.getPhoneNumbers();
 	var name = contactEntry.getTitle().getText();
+	
     // Iterate through the array of phones belonging to a single contact entry
     if (phoneNumbers.length != 0) {
      	for (var j = 0; j < phoneNumbers.length; j++) {
@@ -108,7 +102,6 @@ function generateContactList(contactEntry){
 		}
     }
 }
-
 
 function fillData(contact,phone){
 	$("#contact").html(contact);

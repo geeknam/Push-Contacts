@@ -1,10 +1,12 @@
 <html xmlns:fb="http://www.facebook.com/2008/fbml">
 	<head>
+		<meta name="google-site-verification" content="5ecY2fCrFkKS8wwsu-40YgKlnOMsNPD5GrwyDpVd74g" />
 		<title>Android Push Contacts</title>
 		
 	    <link type="text/css" rel="stylesheet" href="/static/css/style.css" />
-		<link type="text/css" rel="stylesheet" href="/static/css/jquery.gritter.css" />
 		<link type="text/css" rel="stylesheet" href="/static/js/facebox/facebox.css" />
+		
+		<!-- <link type="text/css" rel="stylesheet" href="/static/css/jquery.gritter.css" /> -->
 		
 	</head>
 	<body>
@@ -12,29 +14,31 @@
 	
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 		<script src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php"></script>
-		<script src="http://js.pusherapp.com/1.5/pusher.min.js"></script>
 		<script src="http://www.google.com/jsapi"></script>
-
 		<script src="/static/js/facebox/facebox.js"></script>
-		<script src="/static/js/jquery.gritter.min.js"></script>
 		<script src="/static/js/gcontacts.js"></script>
-
+		
+		<!--
+		<script src="/static/js/jquery.gritter.min.js"></script>
+		<script src="http://js.pusherapp.com/1.5/pusher.min.js"></script>
+		
+	    -->
 
 		<script>
 			FB.init("aa644770dd594258e84952ad117c5554", "/static/js/xd_receiver.htm");
-
-			var pusher = new Pusher('b83d2cada7ffe791153b');
-			pusher.subscribe({{ user }}); 
-
-			pusher.bind('my_event', function(data) {
-			  	$.gritter.add({
-					title: 'SMS from ' + data["phone"],
-					text: data["sms"],
-					image: '/static/images/sms_icon.png',
-					sticky: false, 
-					time: ''
-				});
-			});
+			
+			// var pusher = new Pusher('b83d2cada7ffe791153b');
+			// 		pusher.subscribe({{ user }}); 
+			// 
+			// 		pusher.bind('my_event', function(data) {
+			// 		  	$.gritter.add({
+			// 				title: 'SMS from ' + data["phone"],
+			// 				text: data["sms"],
+			// 				image: '/static/images/sms_icon.png',
+			// 				sticky: false, 
+			// 				time: ''
+			// 			});
+			// 		});
 		</script>
 
 		<!-- *************** GOOGLE ANALYTICS *************** -->

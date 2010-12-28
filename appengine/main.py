@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright 2007 Google Inc.
+# Copyright 2010 Ngo Minh Nam
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,19 +20,19 @@
 # Original implementation from ChromToPhone (http://code.google.com/p/chrometophone/source/browse/#svn/trunk/appengine)
 
 # Features: - Store/remove C2DM registration_id in/from datastore
-#           - Send POST request to C2DM server to be pushed to the Android phone
+#           - Send POST request to C2DM server to be pushed to the Android phone        
 # Notes:    - delay_while_idle and sendWithRetry is not implemented
 
 from os import path
 
 from google.appengine.ext import db, webapp
-from google.appengine.ext.webapp import util
 from google.appengine.api import users
 from google.appengine.api import urlfetch
-from google.appengine.ext.webapp.template import render
-from google.appengine.api.labs import taskqueue
 from google.appengine.api import xmpp
+from google.appengine.api.labs import taskqueue
+from google.appengine.ext.webapp.template import render
 from google.appengine.ext.webapp import xmpp_handlers
+from google.appengine.ext.webapp import util
 
 import urllib, pusherapp, logging
 
@@ -87,6 +87,17 @@ class UnregisterHandler(webapp.RequestHandler):
             else:
                 self.response.out.write('Not authorized') 
 
+# Used by Chrome Extension to check for logged in users
+class CheckLoginHandler(webapp.RequestHandler):
+    def get(self):
+        self.response.headers['Content-Type'] = 'text/plain'
+        user = users.get_current_user()
+        if user:
+            self.response.out.write('LOGGED_IN')
+        else:
+            self.response.out.write('NOT_LOGGED_IN')
+
+# Handle pushing SMS to phone  
 class SmsHandler(webapp.RequestHandler):
     def post(self):
         phone_number = self.request.get('phone')
@@ -102,9 +113,8 @@ class SmsHandler(webapp.RequestHandler):
             data = {"data.sms" : sms,
                     "data.phone_number" : phone_number}
             sendToPhone(self,data, user.email())
-        else:
-            self.redirect(users.create_login_url(self.request.uri))
 
+# Handle pushing a contact to phone
 class SendHandler(webapp.RequestHandler):
     def get(self):
         self.response.headers['Content-Type'] = 'text/plain'
@@ -128,6 +138,7 @@ class SendHandler(webapp.RequestHandler):
 
 #Helper method to send params to C2DM server
 def sendToPhone(self,data,email):
+    #Get the registration entry
     info = Info.get_by_key_name(email)
     if not info:
         self.response.out.write('error_register')
@@ -156,6 +167,7 @@ def sendToPhone(self,data,email):
         else:
             self.response.out.write('error_c2dm')
 
+# Handle notifying the received SMS through GTalk
 class PushHandler(webapp.RequestHandler):
     def post(self):
         user  = self.request.get('user')
@@ -167,27 +179,27 @@ class PushHandler(webapp.RequestHandler):
         else: 
             sms = unicode(sms)
         sms = sms.encode('utf-8')
-
         if user:
             user_address = '%s@gmail.com' % (user)
+            #Store the most recent sender
             incoming = Incoming(key_name=user_address)
             incoming.last_sender = phone   
             incoming.put()
-
+            
+            # Send the received SMS to GTalk
             chat_message_sent = False
             if xmpp.get_presence(user_address):
                 msg = "%s : %s" % (sender,sms)
                 status_code = xmpp.send_message(user_address, msg)
                 chat_message_sent = (status_code != xmpp.NO_ERROR)
-
-            taskqueue.add(url='/worker/%s' % (user), params={'sender': sender, 'sms': sms})
+            #taskqueue.add(url='/worker/%s' % (user), params={'phone': phone, 'sms': sms})
             logging.debug(chat_message_sent)
 
 
 class WorkerHandler(webapp.RequestHandler):
     pusher_api_key = "b83d2cada7ffe791153b"
     pusher_app_id  = "1718"
-    pusher_secret  = "c21d24f1c95430e0aacb" 
+    pusher_secret  = "c21d24f1c95430e0aacb"
     def post(self, channel):
         pusher = pusherapp.Pusher(app_id=self.pusher_app_id, key=self.pusher_api_key, secret=self.pusher_secret)
         phone = self.request.get('phone')
@@ -196,12 +208,14 @@ class WorkerHandler(webapp.RequestHandler):
         data = {'phone': phone, 'sms': sms}
         result = pusher[channel].trigger('my_event', data=data)    
 
+# Handle replies from GTalk to send SMS to the latest sender
 class XMPPHandler(xmpp_handlers.CommandHandler):
     def text_message(self, message):
+        #Get sender's email
         idx  = message.sender.index('/')
         user = message.sender[0:idx]
-        logging.debug(user)
 
+        #Get the latest sender
         incoming = Incoming.get_by_key_name(user)
         sender   = incoming.last_sender
         sms      = message.arg
@@ -215,6 +229,7 @@ def main():
     application = webapp.WSGIApplication([('/', MainHandler),
                                           ('/register', RegisterHandler),
                                           ('/unregister', UnregisterHandler),
+                                          ('/checklogin', CheckLoginHandler),
                                           ('/send', SendHandler),
                                           ('/sms', SmsHandler),
                                           ('/push', PushHandler),

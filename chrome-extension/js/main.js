@@ -1,8 +1,11 @@
-contact_url = "http://pushcontacts.appspot.com/send";
-sms_url     = "http://pushcontacts.appspot.com/sms";
+contact_url     = "http://pushcontacts.appspot.com/send";
+sms_url         = "http://pushcontacts.appspot.com/sms";
+check_login_url = "http://pushcontacts.appspot.com/checklogin";
 
 $(document).ready(function(){
-	showOnly("#sms_form");
+	$("#content").hide();
+	
+	checkLogin();
 	
 	$("#menu_contact").click(function(){
 		showOnly("#contact_form");
@@ -30,11 +33,29 @@ function showOnly(div){
 	}
 }
 
-function save(){
+function checkLogin(){
+	$.get(check_login_url, function(data){
+		if(data == "LOGGED_IN"){
+			$("#checklogin").hide();
+			$("#content").show();
+			$("#sms_phone").val("Loading contacts...");
+			
+			chrome.extension.getBackgroundPage().getContacts(onContacts);
+			
+			showOnly("#sms_form");
+		}
+		else{
+			chrome.tabs.create({url : "http://pushcontacts.appspot.com" });
+		}
+	});
+}
+
+function saveContact(){
 	var contact_name = encodeURIComponent($("#contact_name").val());
 	var phone_number = encodeURIComponent($("#phone_number").val());
 	
 	get_url = contact_url+"?name="+contact_name+"&phone="+phone_number;
+	
 	if(contact_name == '' || phone_number == ''){
 		$("#response").hide().html("Fill in all blanks").fadeIn(1000);
 	}
@@ -62,7 +83,7 @@ function save(){
 	}
 }
 
-function sendsms(){
+function sendSms(){
 	var phone = $("#sms_phone").val();
 	var sms   = $("#sms").val();
 	
@@ -72,8 +93,14 @@ function sendsms(){
 			$("#sms_phone").val("");
 			$("#sms").val("");
 		}
+		else if(data == "error_register"){
+			$("#response").hide().html("You haven't registered your Android device yet").fadeIn(1000);
+		}
+		else if(data == "error_c2dm"){
+			$("#response").hide().html("There was a problem with C2DM service").fadeIn(1000);
+		}
 		else{
-			$("#sms_response").hide().html("Not pushed").fadeIn(1000);
+			$("#sms_response").hide().html("There was unknown problem").fadeIn(1000);
 		}
 	});
 }

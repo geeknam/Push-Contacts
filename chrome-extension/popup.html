@@ -55,26 +55,24 @@
 						if (number['$t'] != null && number['$t'] != '') {
 							var fix_num = number['$t'].replace(/\s+/g,'');
 							var tmp = [contact['name'], fix_num]
-	                        //contacts.push("[" + contact['name'] + "] " + number['$t']);
 							contacts.push(tmp);
 	                    }
             		}
           		}
         	}	
 			fillAutocomplete(contacts);
+			$("#sms_phone").val("");
       	};
-
-		function init(){
-			chrome.extension.getBackgroundPage().getContacts(onContacts);			
-		}
 
 	</script>
 </head>
 
-<body onload="init();">
+<body>
+	<div id="checklogin">
+		<p>Check for logged in user...</p>
+	</div>
 	
 	<div id="content">
-		<img src="images/alert_overlay.png" style="position:absolute; top: -1000px;"/>
 		<!------------ MENU ------------>
 		<div id="menu">
 			<ul>
@@ -96,7 +94,7 @@
 				</tr>
 				<tr>
 					<td>&nbsp;</td>
-					<td><input type="submit" value="Save to Phone" onclick="save()"/></td>
+					<td><input type="submit" value="Save to Phone" onclick="saveContact()"/></td>
 				</tr>
 			</table>
 			<div id="contact_response">Add a new contact by filling the form</div>
@@ -114,7 +112,7 @@
 				</tr>
 				<tr>
 					<td>&nbsp;</td>
-					<td><input type="submit" value="Send SMS" onclick="sendsms()"/></td>
+					<td><input type="submit" value="Send SMS" onclick="sendSms()"/></td>
 				</tr>
 			</table>
 			<div id="sms_response">Compose a new message SMS</div>
