@@ -27,6 +27,27 @@
 		<script>
 			FB.init("aa644770dd594258e84952ad117c5554", "/static/js/xd_receiver.htm");
 			
+			var uservoiceOptions = {
+		    	key: 'geeknam',
+			    host: 'geeknam.uservoice.com', 
+			    forum: '40003',
+			    alignment: 'left',
+			    background_color:'#90bd09', 
+			    text_color: 'white',
+			    hover_color: '#0066CC',
+			    lang: 'en',
+			    showTab: true
+		  	};
+		
+		  	function _loadUserVoice() {
+			    var s = document.createElement('script');
+			    s.src = ("https:" == document.location.protocol ? "https://" : "http://") + "cdn.uservoice.com/javascripts/widgets/tab.js";
+			    document.getElementsByTagName('head')[0].appendChild(s);
+			}
+		  	_loadSuper = window.onload;
+		  	window.onload = (typeof window.onload != 'function') ? _loadUserVoice : function() { _loadSuper(); _loadUserVoice(); };
+		
+		
 			// var pusher = new Pusher('b83d2cada7ffe791153b');
 			// 		pusher.subscribe({{ user }}); 
 			// 
@@ -39,20 +60,21 @@
 			// 				time: ''
 			// 			});
 			// 		});
+			
 		</script>
 
 		<!-- *************** GOOGLE ANALYTICS *************** -->
 		<script type="text/javascript">
 
-		  var _gaq = _gaq || [];
-		  _gaq.push(['_setAccount', 'UA-18902372-1']);
-		  _gaq.push(['_trackPageview']);
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-18902372-1']);
+		_gaq.push(['_trackPageview']);
 
-		  (function() {
-		    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-		    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-		    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-		  })();
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		  	ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		  	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
 
 		</script>
 	</body>

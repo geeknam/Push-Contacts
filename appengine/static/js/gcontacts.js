@@ -89,6 +89,7 @@ function searchContacts(search){
 function generateContactList(contactEntry){
 	var phoneNumbers = contactEntry.getPhoneNumbers();
 	var name = contactEntry.getTitle().getText();
+	name = name.replace(/'/g," ");                        // escape ' (apostrophe) which prevents modal box from popping up
 	
     // Iterate through the array of phones belonging to a single contact entry
     if (phoneNumbers.length != 0) {

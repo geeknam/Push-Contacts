@@ -90,7 +90,7 @@
 				</tr>
 				<tr>
 					<td class="label">Phone Number:</td>
-					<td><input type="text" name="phone_number" id="phone_number" maxlength="10"/></td>
+					<td><input type="text" name="phone_number" id="phone_number" /></td>
 				</tr>
 				<tr>
 					<td>&nbsp;</td>
@@ -112,7 +112,10 @@
 				</tr>
 				<tr>
 					<td>&nbsp;</td>
-					<td><input type="submit" value="Send SMS" onclick="sendSms()"/></td>
+					<td>
+						<input type="submit" value="Send SMS" onclick="sendSms()"/>
+						<span id="counter"></span>
+					</td>
 				</tr>
 			</table>
 			<div id="sms_response">Compose a new message SMS</div>
@@ -133,8 +136,13 @@
 					<td>pushcontacts@appspot.com</td>
 				</tr>
 			</table>
-			<p align="center"><script type="text/javascript" src="http://www.ohloh.net/p/485197/widgets/project_thin_badge.js"></script></p>
+			<p align="center">
+				<script type="text/javascript" src="http://www.ohloh.net/p/485197/widgets/project_thin_badge.js"></script>
+			</p>
 		</div>
 	</div>
+	<p id="donation" align="center">Please support the development with a donation
+		<a href='http://www.pledgie.com/campaigns/13657' target="_blank"><img alt='Click here to lend your support to: Push-Contacts' src='http://www.pledgie.com/campaigns/13657.png?skin_name=chrome' border='0' /></a>
+	</p>
 </body>
 </html>

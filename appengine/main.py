@@ -29,7 +29,6 @@ from google.appengine.ext import db, webapp
 from google.appengine.api import users
 from google.appengine.api import urlfetch
 from google.appengine.api import xmpp
-from google.appengine.api.labs import taskqueue
 from google.appengine.ext.webapp.template import render
 from google.appengine.ext.webapp import xmpp_handlers
 from google.appengine.ext.webapp import util
@@ -115,7 +114,7 @@ class SmsHandler(webapp.RequestHandler):
             sendToPhone(self,data, user.email())
 
 # Handle pushing a contact to phone
-class SendHandler(webapp.RequestHandler):
+class ContactHandler(webapp.RequestHandler):
     def get(self):
         self.response.headers['Content-Type'] = 'text/plain'
         #URL decode params
@@ -136,6 +135,71 @@ class SendHandler(webapp.RequestHandler):
                 #User is not logged in
                 self.redirect(users.create_login_url(self.request.uri))
 
+# Handle notifying the received SMS through GTalk
+class PushHandler(webapp.RequestHandler):
+    def post(self):
+        user  = self.request.get('user')
+        sender= self.request.get('sender')
+        phone = self.request.get('phone')
+        sms   = self.request.get('sms')
+        if isinstance(sms, str):
+            sms    = unicode(sms, 'utf-8')
+            sender = unicode(sender, 'utf-8')
+        else: 
+            sms    = unicode(sms)
+            sender = unicode(sender)
+        sms    = sms.encode('utf-8')
+        sender = sender.encode('utf-8')
+        
+        if user:
+            user_address = '%s@gmail.com' % (user)
+            #Store the most recent sender
+            incoming = Incoming(key_name=user_address)
+            incoming.last_sender = phone   
+            incoming.put()
+            
+            # Send the received SMS to GTalk
+            chat_message_sent = False
+            if xmpp.get_presence(user_address):
+                msg = "%s : %s" % (sender,sms)
+                status_code = xmpp.send_message(user_address, msg)
+                chat_message_sent = (status_code != xmpp.NO_ERROR)
+            logging.debug(chat_message_sent) 
+
+# Handle replies from GTalk to send SMS to the latest sender
+class XMPPHandler(xmpp_handlers.CommandHandler):
+    def text_message(self, message):
+        #Get sender's email
+        idx   = message.sender.index('/')
+        email = message.sender[0:idx]
+        #Get the latest sender's phone number
+        incoming = Incoming.get_by_key_name(email)
+        sender   = incoming.last_sender
+        sms      = message.arg
+        if isinstance(sms, str):
+            sms = unicode(sms, 'utf-8')
+        else: 
+            sms = unicode(sms)
+        sms    = sms.encode('utf-8')
+        data = {"data.sms" : sms,
+                "data.phone_number" : sender}
+        sendToPhone(self, data, email)
+    def sms_command(self, message=None):
+        idx_email = message.sender.index('/')
+        email = message.sender[0:idx_email]
+        idx_phone = message.arg.index(':')
+        phone = message.arg[0:idx_phone]
+        sms = message.arg[idx_phone+1:]
+        if isinstance(sms, str):
+            sms = unicode(sms, 'utf-8')
+        else: 
+            sms = unicode(sms)
+        sms  = sms.encode('utf-8')
+        data = {"data.sms" : sms,
+                "data.phone_number" : phone}
+        sendToPhone(self, data, email)
+        message.reply("SMS has been sent")
+
 #Helper method to send params to C2DM server
 def sendToPhone(self,data,email):
     #Get the registration entry
@@ -155,7 +219,6 @@ def sendToPhone(self,data,email):
         form_fields.update(data)
         form_data = urllib.urlencode(form_fields)
         url = "https://android.clients.google.com/c2dm/send"
-    
         #Make a POST request to C2DM server
         result = urlfetch.fetch(url=url,
                                 payload=form_data,
@@ -165,75 +228,17 @@ def sendToPhone(self,data,email):
         if result.status_code == 200:
             self.response.out.write("OK")
         else:
-            self.response.out.write('error_c2dm')
-
-# Handle notifying the received SMS through GTalk
-class PushHandler(webapp.RequestHandler):
-    def post(self):
-        user  = self.request.get('user')
-        sender= self.request.get('sender')
-        phone = self.request.get('phone')
-        sms   = self.request.get('sms')
-        if isinstance(sms, str):
-            sms = unicode(sms, 'utf-8')
-        else: 
-            sms = unicode(sms)
-        sms = sms.encode('utf-8')
-        if user:
-            user_address = '%s@gmail.com' % (user)
-            #Store the most recent sender
-            incoming = Incoming(key_name=user_address)
-            incoming.last_sender = phone   
-            incoming.put()
-            
-            # Send the received SMS to GTalk
-            chat_message_sent = False
-            if xmpp.get_presence(user_address):
-                msg = "%s : %s" % (sender,sms)
-                status_code = xmpp.send_message(user_address, msg)
-                chat_message_sent = (status_code != xmpp.NO_ERROR)
-            #taskqueue.add(url='/worker/%s' % (user), params={'phone': phone, 'sms': sms})
-            logging.debug(chat_message_sent)
-
-
-class WorkerHandler(webapp.RequestHandler):
-    pusher_api_key = "b83d2cada7ffe791153b"
-    pusher_app_id  = "1718"
-    pusher_secret  = "c21d24f1c95430e0aacb"
-    def post(self, channel):
-        pusher = pusherapp.Pusher(app_id=self.pusher_app_id, key=self.pusher_api_key, secret=self.pusher_secret)
-        phone = self.request.get('phone')
-        sms   = self.request.get('sms')
-    
-        data = {'phone': phone, 'sms': sms}
-        result = pusher[channel].trigger('my_event', data=data)    
-
-# Handle replies from GTalk to send SMS to the latest sender
-class XMPPHandler(xmpp_handlers.CommandHandler):
-    def text_message(self, message):
-        #Get sender's email
-        idx  = message.sender.index('/')
-        user = message.sender[0:idx]
-
-        #Get the latest sender
-        incoming = Incoming.get_by_key_name(user)
-        sender   = incoming.last_sender
-        sms      = message.arg
-
-        data = {"data.sms" : sms,
-                "data.phone_number" : sender}
-        sendToPhone(self, data, user)
+            self.response.out.write("error_c2dm")
+        logging.debug(result.status_code)   
             
 def main():
-    
     application = webapp.WSGIApplication([('/', MainHandler),
                                           ('/register', RegisterHandler),
                                           ('/unregister', UnregisterHandler),
                                           ('/checklogin', CheckLoginHandler),
-                                          ('/send', SendHandler),
+                                          ('/send', ContactHandler),
                                           ('/sms', SmsHandler),
                                           ('/push', PushHandler),
-                                          (r'/worker/(.*)', WorkerHandler),
                                           ('/_ah/xmpp/message/chat/', XMPPHandler)
                                           ],
                                           debug=True)

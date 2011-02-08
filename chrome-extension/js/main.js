@@ -18,6 +18,12 @@ $(document).ready(function(){
 	$("#menu_about").click(function(){
 		showOnly("#about");
 	});
+	
+	$('#counter').html($('#sms').val().length + ' chars');
+	
+	$('#sms').keyup(function(){
+		$('#counter').html($(this).val().length + ' chars');
+	});
 
 });
 
@@ -45,6 +51,7 @@ function checkLogin(){
 			showOnly("#sms_form");
 		}
 		else{
+			$("#checklogin").html("<p>Please login to the website before using the extension</p>");
 			chrome.tabs.create({url : "http://pushcontacts.appspot.com" });
 		}
 	});
