@@ -18,6 +18,9 @@ handlers:
   static_files: static/images/favicon.ico
   upload: static/images/favicon.ico
 
+- url: /test.*
+  script: gaeunit.py
+    
 - url: .*
   script: main.py
   

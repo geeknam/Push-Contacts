@@ -25,21 +25,17 @@
 
 from os import path
 
-from google.appengine.ext import db, webapp
+from google.appengine.ext import webapp
 from google.appengine.api import users
 from google.appengine.api import urlfetch
 from google.appengine.api import xmpp
 from google.appengine.ext.webapp.template import render
 from google.appengine.ext.webapp import xmpp_handlers
 from google.appengine.ext.webapp import util
+from model import Info, Incoming
 
-import urllib, pusherapp, logging
+import urllib, logging
 
-class Info(db.Model):
-    registration_id = db.StringProperty(multiline=True)
-
-class Incoming(db.Model):
-    last_sender = db.StringProperty(multiline=True)
 
 class MainHandler(webapp.RequestHandler):
     def get(self):
@@ -56,7 +52,6 @@ class RegisterHandler(webapp.RequestHandler):
         self.response.headers['Content-Type'] = 'text/plain'
         devregid = self.request.get('devregid')
         if not devregid:
-            self.error(400)
             self.response.out.write('Must specify devregid')
         else:
             user = users.get_current_user()
@@ -74,7 +69,6 @@ class UnregisterHandler(webapp.RequestHandler):
         self.response.headers['Content-Type'] = 'text/plain'
         devregid = self.request.get('devregid')
         if not devregid:
-            self.error(400)
             self.response.out.write('Must specify devregid')
         else:
             user = users.get_current_user()
@@ -100,18 +94,13 @@ class CheckLoginHandler(webapp.RequestHandler):
 class SmsHandler(webapp.RequestHandler):
     def post(self):
         phone_number = self.request.get('phone')
-        sms = self.request.get('sms')
-        if isinstance(sms, str):
-            sms = unicode(sms, 'utf-8')
-        else: 
-            sms = unicode(sms)
-        sms = sms.encode('utf-8')
+        sms = handle_unicode(self.request.get('sms'))
         
         user = users.get_current_user()
         if user:
             data = {"data.sms" : sms,
                     "data.phone_number" : phone_number}
-            sendToPhone(self,data, user.email())
+            sendToPhone(self, data, user.email())
 
 # Handle pushing a contact to phone
 class ContactHandler(webapp.RequestHandler):
@@ -122,7 +111,6 @@ class ContactHandler(webapp.RequestHandler):
         phone_number = urllib.unquote(self.request.get('phone'))
         
         if not contact_name or not phone_number:
-            self.error(400)
             self.response.out.write('error_params')
         else:
             user = users.get_current_user()
@@ -139,25 +127,15 @@ class ContactHandler(webapp.RequestHandler):
 class PushHandler(webapp.RequestHandler):
     def post(self):
         user  = self.request.get('user')
-        sender= self.request.get('sender')
         phone = self.request.get('phone')
-        sms   = self.request.get('sms')
-        if isinstance(sms, str):
-            sms    = unicode(sms, 'utf-8')
-            sender = unicode(sender, 'utf-8')
-        else: 
-            sms    = unicode(sms)
-            sender = unicode(sender)
-        sms    = sms.encode('utf-8')
-        sender = sender.encode('utf-8')
-        
+        sender= handle_unicode(self.request.get('sender')) #sender's name
+        sms   = handle_unicode(self.request.get('sms'))
         if user:
             user_address = '%s@gmail.com' % (user)
             #Store the most recent sender
             incoming = Incoming(key_name=user_address)
             incoming.last_sender = phone   
-            incoming.put()
-            
+            incoming.put()    
             # Send the received SMS to GTalk
             chat_message_sent = False
             if xmpp.get_presence(user_address):
@@ -174,13 +152,8 @@ class XMPPHandler(xmpp_handlers.CommandHandler):
         email = message.sender[0:idx]
         #Get the latest sender's phone number
         incoming = Incoming.get_by_key_name(email)
-        sender   = incoming.last_sender
-        sms      = message.arg
-        if isinstance(sms, str):
-            sms = unicode(sms, 'utf-8')
-        else: 
-            sms = unicode(sms)
-        sms    = sms.encode('utf-8')
+        sender   = incoming.last_sender #sender's phone number - number
+        sms      = handle_unicode(message.arg)
         data = {"data.sms" : sms,
                 "data.phone_number" : sender}
         sendToPhone(self, data, email)
@@ -189,12 +162,7 @@ class XMPPHandler(xmpp_handlers.CommandHandler):
         email = message.sender[0:idx_email]
         idx_phone = message.arg.index(':')
         phone = message.arg[0:idx_phone]
-        sms = message.arg[idx_phone+1:]
-        if isinstance(sms, str):
-            sms = unicode(sms, 'utf-8')
-        else: 
-            sms = unicode(sms)
-        sms  = sms.encode('utf-8')
+        sms = handle_unicode(message.arg[idx_phone+1:])
         data = {"data.sms" : sms,
                 "data.phone_number" : phone}
         sendToPhone(self, data, email)
@@ -230,6 +198,11 @@ def sendToPhone(self,data,email):
         else:
             self.response.out.write("error_c2dm")
         logging.debug(result.status_code)   
+
+def handle_unicode(arg):
+    if isinstance(arg, str):
+        arg = unicode(arg, 'utf-8')
+    return arg.encode('utf-8')
             
 def main():
     application = webapp.WSGIApplication([('/', MainHandler),
