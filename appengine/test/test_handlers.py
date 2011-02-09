@@ -73,7 +73,6 @@ class SmsHandlerTest(unittest.TestCase):
         user_entry = main.Info(key_name="test@example.com")
         user_entry.registration_id = "testdevregid"   
         user_entry.put()
-
         app = TestApp(self.application)
         response = app.post('/sms', self.data)
         self.assertTrue('error_c2dm' in response)

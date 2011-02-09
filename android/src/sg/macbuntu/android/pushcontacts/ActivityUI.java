@@ -26,7 +26,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.telephony.SmsMessage;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -41,7 +44,7 @@ import android.widget.Toast;
 public class ActivityUI extends Activity {
     public static final String UPDATE_UI_ACTION = "sg.macbuntu.android.pushcontacts.UPDATE_UI";
     public static final String AUTH_PERMISSION_ACTION = "sg.macbuntu.android.pushcontacts.AUTH_PERMISSION";
-    //private static final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
+    static final private int PREFS = Menu.FIRST;
 
     private boolean mPendingAuth = false;
     private Context mContext = null;
@@ -162,33 +165,26 @@ public class ActivityUI extends Activity {
         }
     };
     
- /*   private final BroadcastReceiver SmsReceiver = new BroadcastReceiver() {
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
 		
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			
-	        Bundle bundle = intent.getExtras();        
-	        SmsMessage[] msgs = null;
-	        
-	        String contact = "";
-	        String body = "";
-	        String account = "";
-	        
-	        if (bundle != null)
-	        {
-	            Object[] pdus = (Object[]) bundle.get("pdus");
-	            
-	            msgs = new SmsMessage[pdus.length];            
-	            msgs[0] = SmsMessage.createFromPdu((byte[])pdus[0]);  
-	            
-	            contact = msgs[0].getOriginatingAddress();                     
-	            body    = msgs[0].getMessageBody().toString();       
-	            //account = getAccount();
-	            
-	            //Toast.makeText(context, body, Toast.LENGTH_LONG).show();
-	            
-	        } 		
+		MenuItem pref = menu.add(0, PREFS, Menu.NONE,"Preferences");
+		pref.setIcon(android.R.drawable.ic_menu_preferences);
+		
+		return true;
+	}
+	
+	@Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+		super.onOptionsItemSelected(item);
+		switch (item.getItemId()) {
+			case (PREFS):{
+                Intent settingsActivity = new Intent(getBaseContext(),Preferences.class);
+                startActivity(settingsActivity);
+				break;
+			}
 		}
-	}; */
-    
+		return false;
+    }
 }

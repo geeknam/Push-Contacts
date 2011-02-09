@@ -27,6 +27,7 @@ import android.database.Cursor;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.Contacts;
 import android.provider.Contacts.People;
 import android.telephony.SmsManager;
@@ -75,12 +76,16 @@ public class C2DMReceiver extends C2DMBaseReceiver {
            
            if(name != null){
                Uri contactUri = insertContact(context, name, phone);
-               generateNotification(context, TYPE_CONTACT,name, phone, contactUri);
+               if(getPrefs()[0]){
+                   generateNotification(context, TYPE_CONTACT,name, phone, contactUri);
+               }
            }
            else{
         	   Long threadId = getThreadIdFromPhone(context, phone);
         	   sendSMS(phone, sms);
-        	   generateNotification(context, TYPE_SMS, name, phone, Uri.parse("content://mms-sms/conversations/"+threadId));
+        	   if(getPrefs()[0]){
+        		   generateNotification(context, TYPE_SMS, name, phone, Uri.parse("content://mms-sms/conversations/"+threadId));
+        	   }
            }
       
        }
@@ -109,7 +114,11 @@ public class C2DMReceiver extends C2DMBaseReceiver {
 	   getContentResolver().insert(Uri.parse("content://sms/sent"), values);
 
 	   SmsManager sms = SmsManager.getDefault();
-       sms.sendTextMessage(phone, null, message, null, null);     
+	   //try sendMultipartTextMessage 
+	   //http://www.anddev.org/advanced-tutorials-f21/can-not-read-the-sms-when-using-sendmultiparttextmessage-t11581.html
+	   //ArrayList<String> messages = sms.divideMessage(message);
+	   //sms.sendTextMessage(phone, null, messages, null, null); 
+       sms.sendTextMessage(phone, null, message, null, null);   
    }
    
    private static String getNameFromPhoneNumber(Context context, String phone) {
@@ -176,8 +185,14 @@ public class C2DMReceiver extends C2DMBaseReceiver {
 	   }
 
        Notification notification = new Notification(icon, message, when);
-       notification.defaults = Notification.DEFAULT_SOUND;
-       notification.defaults |= Notification.DEFAULT_VIBRATE;
+       boolean settings[] = getPrefs();
+       
+       if(settings[1]){
+           notification.defaults = Notification.DEFAULT_SOUND;
+       }
+       if(settings[2]){
+           notification.defaults |= Notification.DEFAULT_VIBRATE;
+       }
        notification.flags |= Notification.FLAG_AUTO_CANCEL;
        
        //Launch new Intent to view a new contact added
@@ -188,5 +203,14 @@ public class C2DMReceiver extends C2DMBaseReceiver {
        NotificationManager nm = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
        nm.notify(1, notification);
 
+   }
+   
+   private boolean[] getPrefs() {
+       SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+       boolean notificationPreference = prefs.getBoolean("cbNotification", true);
+       boolean soundPreference = prefs.getBoolean("cbPush", true);
+       boolean vibrationPreference = prefs.getBoolean("cbVibration", true);
+       boolean settings[] = {notificationPreference, soundPreference, vibrationPreference};
+       return settings;
    }
 }

@@ -20,6 +20,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.Contacts;
 import android.telephony.SmsMessage;
 import android.util.Log;
@@ -39,21 +40,26 @@ public class SmsReceiver extends BroadcastReceiver{
         String body = "";
         String account = "";
         
-        if (bundle != null && accountExist(context))
-        {
-            Object[] pdus = (Object[]) bundle.get("pdus");
-            
-            msgs = new SmsMessage[pdus.length];            
-            msgs[0] = SmsMessage.createFromPdu((byte[])pdus[0]);  
-            
-            contact = msgs[0].getOriginatingAddress();                     
-            body    = msgs[0].getMessageBody().toString();       
-            account = getAccount(context);
-            sender  = getNameFromPhoneNumber(context, contact);
-            
-            Toast.makeText(context, "SMS has been pushed", Toast.LENGTH_LONG).show();
-            postData(account, contact, body, sender);
-        } 
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean pushPreference = prefs.getBoolean("cbPush", true);
+        
+        if(pushPreference){
+            if (bundle != null && accountExist(context))
+            {
+                Object[] pdus = (Object[]) bundle.get("pdus");
+                
+                msgs = new SmsMessage[pdus.length];            
+                msgs[0] = SmsMessage.createFromPdu((byte[])pdus[0]);  
+                
+                contact = msgs[0].getOriginatingAddress();                     
+                body    = msgs[0].getMessageBody().toString();       
+                account = getAccount(context);
+                sender  = getNameFromPhoneNumber(context, contact);
+                
+                Toast.makeText(context, "SMS has been pushed", Toast.LENGTH_LONG).show();
+                postData(account, contact, body, sender);
+            } 
+        }
 	}
 	
     private static String getNameFromPhoneNumber(Context context, String phone) {
@@ -116,5 +122,6 @@ public class SmsReceiver extends BroadcastReceiver{
 	        // TODO Auto-generated catch block
 	    }
 	} 
+
 
 }
