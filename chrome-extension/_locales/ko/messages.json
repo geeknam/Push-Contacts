@@ -1,0 +1,71 @@
+{
+	"appName" :
+		{ "message" : "Push Contacts 크롬 확장" },
+	"appDescription" :
+		{ "message" : "크롬 브라우져에서 안드로이드 폰을 통하여 문자를 주고 받음" },
+
+	"sendSMS" :
+		{ "message" : "문자 보내기" },
+	"addContact" :
+		{ "message" : "연락처 추가" },
+	"about" :
+		{ "message" : "이 프로그램은?" },
+
+	"contactName" :
+		{ "message" : "이름" },
+	"phoneNumber" :
+		{ "message" : "전화번호" },
+	"saveToPhone" :
+		{ "message" : "휴대폰에 저장하기" },
+
+	"to" :
+		{ "message" : "받는사람" },
+	"message" :
+		{ "message" : "문자메시지" },
+
+	"addNewContact" :
+		{ "message" : "새로운 연락처를 등록해주세요" },
+	"contactPushed" :
+		{ "message" : "연락처가 휴대폰으로 전송되었습니다." },
+
+	"composeNewMessage" :
+		{ "message" : "새로운 문자를 작성해 주세요" },
+	"smsPushed" :
+		{ "message" : "문자가 휴대폰으로 전송되었습니다." },
+
+	"noMatch" :
+		{ "message" : "불일치!" },
+	"checkLogin" :
+		{ "message" : "로그인을 확인 합니다." },
+	"doLoginMessage" :
+		{ "message" : "사용하기전에 웹페이지에 로그인 해주세요" },
+	"fillAllBlanks" :
+		{ "message" : "모든 빈칸을 채워 주세요" },
+	"registerDevice" :
+		{ "message" : "휴대폰을 등록하세요." },
+	"loginRequired" :
+		{ "message" : "서비스를 사용하기 위해서 로그인이 필요합니다." },
+	"invalidNumber" :
+		{ "message" : "전화번호가 유효하지 않습니다." },
+	"unknownError" :
+		{ "message" : "알려지지 않은 문제가 발생하였습니다." },
+	"errorC2DM" :
+		{ "message" : "푸시서비스와 관련하여 문제가 발생하였습니다." },
+	"errorRegister" :
+		{ "message" : "휴대폰이 아직 등록되어있지 않습니다." },
+	"loadingContacts" :
+		{ "message" : "연락처를 읽는중..." },
+	"chars" :
+		{ "message" : "문자" },
+	"bytes" :
+		{ "message" : "바이트" },
+
+	"developer" :
+		{ "message" : "개발자" },
+	"website" :
+		{ "message" : "웹페이지" },
+	"gtalk" :
+		{ "message" : "구글토크" },
+	"supportDevelopment" :
+		{ "message" : "기부로 개발을 지원해 주세요" }
+}

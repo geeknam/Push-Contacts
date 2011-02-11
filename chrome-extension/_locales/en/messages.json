@@ -1,0 +1,71 @@
+{
+	"appName" :
+		{ "message" : "Push Contacts Chrome Extension" },
+	"appDescription" :
+		{ "message" : "Send/receive SMS on your Android phone with a Chrome browser" },
+
+	"sendSMS" :
+		{ "message" : "Send SMS" },
+	"addContact" :
+		{ "message" : "Add Contact" },
+	"about" :
+		{ "message" : "About" },
+
+	"contactName" :
+		{ "message" : "Contact Name" },
+	"phoneNumber" :
+		{ "message" : "Phone Number" },
+	"saveToPhone" :
+		{ "message" : "Save to Phone" },
+
+	"to" :
+		{ "message" : "To" },
+	"message" :
+		{ "message" : "Message" },
+
+	"addNewContact" :
+		{ "message" : "Add a new contact by filling the form" },
+	"contactPushed" :
+		{ "message" : "Contact has been pushed to the phone" },
+
+	"composeNewMessage" :
+		{ "message" : "Compose a new message SMS" },
+	"smsPushed" :
+		{ "message" : "SMS has been pushed to the phone" },
+
+	"noMatch" :
+		{ "message" : "No match!" },
+	"checkLogin" :
+		{ "message" : "Check for logged in user..." },
+	"doLoginMessage" :
+		{ "message" : "Please login to the website before using the extension" },
+	"fillAllBlanks" :
+		{ "message" : "Fill in all blanks" },
+	"registerDevice" :
+		{ "message" : "Please register your device" },
+	"loginRequired" :
+		{ "message" : "Login to service required" },
+	"invalidNumber" :
+		{ "message" : "Phone number is invalid" },
+	"unknownError" :
+		{ "message" : "There was unknown problem" },
+	"errorC2DM" :
+		{ "message" : "There was a problem with C2DM service" },
+	"errorRegister" :
+		{ "message" : "You haven't registered your Android device yet" },
+	"loadingContacts" :
+		{ "message" : "Loading contacts..." },
+	"chars" :
+		{ "message" : "chars" },
+	"bytes" :
+		{ "message" : "bytes" },
+
+	"developer" :
+		{ "message" : "Developer" },
+	"website" :
+		{ "message" : "Website" },
+	"gtalk" :
+		{ "message" : "GTalk" },
+	"supportDevelopment" :
+		{ "message" : "Please support the development with a donation" }
+}
