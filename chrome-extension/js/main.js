@@ -19,13 +19,27 @@ $(document).ready(function(){
 		showOnly("#about");
 	});
 	
-	$('#counter').html($('#sms').val().length + ' chars');
+	$('#counter').html( getLength($('#sms').val()) + ' chars');
 	
 	$('#sms').keyup(function(){
-		$('#counter').html($(this).val().length + ' chars');
+		var bytes = getLength($(this).val());
+		var chars = $(this).val().length;
+		$('#counter').html( (chars == bytes) ? (chars +' chars') : (chars +' chars (' + bytes + ' bytes)'));
 	});
 
 });
+
+function getLength(string)
+{
+	var length = 0;
+
+	for (var i = 0; i < string.length; i++)
+	{
+		length += (escape(string.charAt(i)).substring(0,2)=='%u') ? 2 : 1;
+	}
+
+	return length;
+}
 
 function showOnly(div){
 	var all_divs = ["#sms_form","#contact_form","#about"];
