@@ -17,7 +17,7 @@
 					matchSubset:1,
 					onItemSelect:selectItem,
 					onFindValue:findValue,
-					autoFill:true,
+//					autoFill:true,
 					formatItem:formatItem,
 					maxItemsToShow:10
 				}
@@ -26,7 +26,7 @@
 		
 		
 		function findValue(li) {
-			if( li == null ) return alert("No match!");
+			if( li == null ) return alert(i18n("noMatch"));
 			if( !!li.extra ) var sValue = li.extra[0];
 			else var sValue = li.selectValue;
 			$("#sms_phone").val(sValue);
@@ -69,70 +69,70 @@
 
 <body>
 	<div id="checklogin">
-		<p>Check for logged in user...</p>
+		<p>${checkLogin}</p>
 	</div>
 	
 	<div id="content">
 		<!------------ MENU ------------>
 		<div id="menu">
 			<ul>
-				<li id="menu_sms">Send SMS</li>
-				<li id="menu_contact">Add Contact</li>
-				<li id="menu_about">About</li>
+				<li id="menu_sms">${sendSMS}</li>
+				<li id="menu_contact">${addContact}</li>
+				<li id="menu_about">${about}</li>
 			</ul>
 		</div>
 		<!------------ CONTACTS FORM ------------>
 		<div id="contact_form">
 			<table>
 				<tr>
-					<td class="label">Contact Name:</td>
+					<td class="label">${contactName}:</td>
 					<td><input type="text" name="contact_name" id="contact_name" /></td>
 				</tr>
 				<tr>
-					<td class="label">Phone Number:</td>
+					<td class="label">${phoneNumber}:</td>
 					<td><input type="text" name="phone_number" id="phone_number" /></td>
 				</tr>
 				<tr>
 					<td>&nbsp;</td>
-					<td><input type="submit" value="Save to Phone" onclick="saveContact()"/></td>
+					<td><input type="submit" value="${saveToPhone}" onclick="saveContact()"/></td>
 				</tr>
 			</table>
-			<div id="contact_response">Add a new contact by filling the form</div>
+			<div id="contact_response">${addNewContact}</div>
 		</div>
 		<!------------ SMS FORM ------------>
 		<div id="sms_form">
 			<table>
 				<tr>
-					<td class="label">To:</td>
+					<td class="label">${to}:</td>
 					<td><input type="text" name="sms_phone" id="sms_phone" /></td>
 				</tr>
 				<tr>
-					<td class="label">Message: </td>
+					<td class="label">${message}:</td>
 					<td><textarea name="sms" id="sms" rows="6" cols="20"></textarea></td>
 				</tr>
 				<tr>
 					<td>&nbsp;</td>
 					<td>
-						<input type="submit" value="Send SMS" onclick="sendSms()"/>
+						<input type="submit" value="${sendSMS}" onclick="sendSms()"/>
 						<span id="counter"></span>
 					</td>
 				</tr>
 			</table>
-			<div id="sms_response">Compose a new message SMS</div>
+			<div id="sms_response">${composeNewMessage}</div>
 		</div>
 		<!------------ ABOUT FORM ------------>
 		<div id="about">
 			<table>
 				<tr>
-					<td>Developer :</td>
+					<td>${developer} :</td>
 					<td>emoinrp@gmail.com</td>
 				</tr>
 				<tr>
-					<td>Website:</td>
+					<td>${website} :</td>
 					<td>http://pushcontacts.appspot.com</td>
 				</tr>
 				<tr>
-					<td>GTalk:</td>
+					<td>${gtalk} :</td>
 					<td>pushcontacts@appspot.com</td>
 				</tr>
 			</table>
@@ -141,7 +141,7 @@
 			</p>
 		</div>
 	</div>
-	<p id="donation" align="center">Please support the development with a donation
+	<p id="donation" align="center">${supportDevelopment} <br/>
 		<a href='http://www.pledgie.com/campaigns/13657' target="_blank"><img alt='Click here to lend your support to: Push-Contacts' src='http://www.pledgie.com/campaigns/13657.png?skin_name=chrome' border='0' /></a>
 	</p>
 </body>
