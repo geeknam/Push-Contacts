@@ -1,0 +1,71 @@
+﻿{
+	"appName" :
+		{ "message" : "Push Contacts Chrome 拡張機能},
+	"appDescription" :
+		{ "message" : "Chrome ブラウザでアンドロイドを通じて文字メッセージを送信する" },
+
+	"sendSMS" :
+		{ "message" : "メッセージを送信する" },
+	"addContact" :
+		{ "message" : "連絡先の追加" },
+	"about" :
+		{ "message" : "アバウト" },
+
+	"contactName" :
+		{ "message" : "名前" },
+	"phoneNumber" :
+		{ "message" : "電話番号" },
+	"saveToPhone" :
+		{ "message" : "携帯に保存する" },
+
+	"to" :
+		{ "message" : "受信者" },
+	"message" :
+		{ "message" : "メッセージ" },
+
+	"addNewContact" :
+		{ "message" : "新しい連絡先を登録してください" },
+	"contactPushed" :
+		{ "message" : "連絡先が携帯に伝送されました。" },
+
+	"composeNewMessage" :
+		{ "message" : "新しいメッセージ入れてください。" },
+	"smsPushed" :
+		{ "message" : "メッセージが携帯に伝送されました。" },
+
+	"noMatch" :
+		{ "message" : "違います。" },
+	"checkLogin" :
+		{ "message" : "ログインされたユーザーを確認します。" },
+	"doLoginMessage" :
+		{ "message" : "使う前にウェブページにログインしてください。" },
+	"fillAllBlanks" :
+		{ "message" : "すべての空欄に記入してください。" },
+	"registerDevice" :
+		{ "message" : "携帯を登録してください。" },
+	"loginRequired" :
+		{ "message" : "サービスを使うためログインが必要です。" },
+	"invalidNumber" :
+		{ "message" : "有効な電話番号じゃないです。" },
+	"unknownError" :
+		{ "message" : "知らされてない問題が発生しました。" },
+	"errorC2DM" :
+		{ "message" : "C2DMサービスにエーラーが発生しました。" },
+	"errorRegister" :
+		{ "message" : "携帯がまだ登録されてありません。" },
+	"loadingContacts" :
+		{ "message" : "連絡先の読み込む中…" },
+	"chars" :
+		{ "message" : "字" },
+	"bytes" :
+		{ "message" : "bytes" },
+
+	"developer" :
+		{ "message" : "開発者" },
+	"website" :
+		{ "message" : "ウェブページ" },
+	"gtalk" :
+		{ "message" : "Google トーク" },
+	"supportDevelopment" :
+		{ "message" : "寄付して開発を助けてください。" }
+}
