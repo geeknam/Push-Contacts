@@ -86,7 +86,6 @@ class SmsHandlerTest(unittest.TestCase):
 #         #from google.appengine.api import xmpp_stub
 #         apiproxy_stub_map.apiproxy = apiproxy_stub_map.APIProxyStubMap()
 #         apiproxy_stub_map.apiproxy.RegisterStub('datastore_v3',datastore_file_stub.DatastoreFileStub('pushcontacts', '/dev/null', '/dev/null'))
-#         #apiproxy_stub_map.apiproxy.RegisterStub('xmpp', urlfetch_stub.URLFetchServiceStub())
 # 
 #     def test_xmpp(self):
 #         app = TestApp(self.application)
