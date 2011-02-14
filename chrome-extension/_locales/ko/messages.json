@@ -36,7 +36,7 @@
 	"noMatch" :
 		{ "message" : "불일치!" },
 	"checkLogin" :
-		{ "message" : "로그인을 확인 합니다." },
+		{ "message" : "로그인된 사용자를 확인 합니다." },
 	"doLoginMessage" :
 		{ "message" : "사용하기전에 웹페이지에 로그인 해주세요" },
 	"fillAllBlanks" :
