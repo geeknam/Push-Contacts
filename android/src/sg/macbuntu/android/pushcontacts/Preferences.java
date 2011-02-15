@@ -15,11 +15,13 @@
  */
 package sg.macbuntu.android.pushcontacts;
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.preference.PreferenceActivity;
 
-public final class Prefs {
-    public static SharedPreferences get(Context context) {
-        return context.getSharedPreferences("PUSHCONTACTS_PREFS", 0);
-    }
+public class Preferences extends PreferenceActivity {
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		addPreferencesFromResource(R.xml.preferences);
+	}
 }

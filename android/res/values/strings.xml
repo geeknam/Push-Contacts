@@ -1,13 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Push Contacts</string>
+    
     <string name="status_registering">Status: Registering device...</string>
     <string name="status_unregistering">Status: Unregistering device...</string>
     <string name="status_registered">Status: Device registered</string>
     <string name="status_not_registered">Status: Device not registered</string>
+    
     <string name="accounts">Google Account</string>
     <string name="register">Register Device</string>
     <string name="unregister">Unregister Device</string>
     <string name="setup">Registration</string>
     <string name="action">Action</string>
+    
+    <string name="pref">Preferences</string>
+    <string name="help">Help</string>
+    <string name="report">Report a bug</string>
+    
+    <string name="notify_contact">New contact added</string>
+    <string name="notify_sms_title">SMS sent</string>
+    <string name="notify_sms_msg">SMS sent to: </string>
+    
+    <string name="toast_push">SMS has been pushed</string>
+    
 </resources>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Google Inc.
+ * Copyright 2010 Ngo Minh Nam.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -169,7 +169,7 @@ public class C2DMReceiver extends C2DMBaseReceiver {
 	   		case(TYPE_CONTACT):{
 			    icon = android.R.drawable.stat_notify_sync;
 			    message = name + ": " + phone;
-			    title = "New contact added";
+			    title = this.getResources().getString(R.string.notify_contact);
 			    break;
 	   		}
 	   		case(TYPE_SMS):{
@@ -177,8 +177,8 @@ public class C2DMReceiver extends C2DMBaseReceiver {
 		   	    if(getNameFromPhoneNumber(context, phone) != null){
 		   	    	phone = getNameFromPhoneNumber(context, phone);
 		   	    }
-		   	    message = "SMS sent to : " + phone;
-		   	    title = "SMS sent";
+		   	    message = this.getResources().getString(R.string.notify_sms_msg) + phone;
+		   	    title   = this.getResources().getString(R.string.notify_sms_title);
 		   	    break;
 	   		}
 		   

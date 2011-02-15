@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Google Inc.
+ * Copyright 2010 Ngo Minh Nam.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ import com.google.android.c2dm.C2DMessaging;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -44,7 +46,10 @@ import android.widget.Toast;
 public class ActivityUI extends Activity {
     public static final String UPDATE_UI_ACTION = "sg.macbuntu.android.pushcontacts.UPDATE_UI";
     public static final String AUTH_PERMISSION_ACTION = "sg.macbuntu.android.pushcontacts.AUTH_PERMISSION";
-    static final private int PREFS = Menu.FIRST;
+    
+    static final private int PREFS  = Menu.FIRST;
+    static final private int HELP   = Menu.FIRST + 1;
+    static final private int REPORT = Menu.FIRST + 2;
 
     private boolean mPendingAuth = false;
     private Context mContext = null;
@@ -67,7 +72,6 @@ public class ActivityUI extends Activity {
 
         registerReceiver(mUpdateUIReceiver, new IntentFilter(UPDATE_UI_ACTION));
         registerReceiver(mAuthPermissionReceiver, new IntentFilter(AUTH_PERMISSION_ACTION));
-        //registerReceiver(SmsReceiver, new IntentFilter(SMS_RECEIVED));
         updateStatus();
     }
 
@@ -75,7 +79,6 @@ public class ActivityUI extends Activity {
     public void onDestroy() {
         unregisterReceiver(mUpdateUIReceiver);
         unregisterReceiver(mAuthPermissionReceiver);
-        //unregisterReceiver(SmsReceiver);
         super.onDestroy();
     }
 
@@ -169,8 +172,13 @@ public class ActivityUI extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		
-		MenuItem pref = menu.add(0, PREFS, Menu.NONE,"Preferences");
+		MenuItem pref   = menu.add(0, PREFS, Menu.NONE, R.string.pref);
+		MenuItem help   = menu.add(0, HELP, Menu.NONE, R.string.help);
+		MenuItem report = menu.add(0, REPORT, Menu.NONE,R.string.report);
+
 		pref.setIcon(android.R.drawable.ic_menu_preferences);
+		help.setIcon(android.R.drawable.ic_menu_info_details);
+		report.setIcon(android.R.drawable.ic_menu_send);
 		
 		return true;
 	}
@@ -179,12 +187,55 @@ public class ActivityUI extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
 		super.onOptionsItemSelected(item);
 		switch (item.getItemId()) {
+			//Launch Preferences
 			case (PREFS):{
                 Intent settingsActivity = new Intent(getBaseContext(),Preferences.class);
                 startActivity(settingsActivity);
 				break;
 			}
+			//Show HELP dialog
+			case (HELP): {
+				showHelpDialog();
+				break;
+			}
+			//Report a bug via Email
+			case (REPORT): {
+				sendEmail();
+				break;
+			}
 		}
 		return false;
     }
+
+	private void showHelpDialog(){
+		String message = "";
+		Builder builder = new AlertDialog.Builder(this);
+		
+		message = "1.Press Register to register the device \n \n" +
+				  "2.Login to GTalk and accept invitation from pushcontacts@appspot.com \n \n" +
+			 	  "3.Go to http://pushcontacts.appspot.com to send SMS \n \n" +
+			 	  "4.You can send SMS using Chrome Extension as well \n \n" +
+			 	  "5.Type /help in GTalk to see all the options";
+		
+		builder.setTitle("Help");
+        builder.setMessage(message);
+        builder.setPositiveButton("OK", null);
+        builder.show();
+	}
+	
+	//Send a email to report a bug
+	private void sendEmail(){
+		/* Create the Intent */
+		final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+
+		/* Fill it with Data */
+		emailIntent.setType("plain/text");
+		emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{"emoinrp@gmail.com"});
+		emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Report a bug");
+		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, "The bug is as following: ");
+
+		/* Send it off to the Activity-Chooser */
+		startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+
+	}
 }

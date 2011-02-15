@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory android:title="General">
+		<CheckBoxPreference 
+			android:title="Statusbar Notification"
+			android:defaultValue="true" 
+			android:summary="Notify sent SMS on statusbar.Recommended to turn on"
+			android:key="cbNotification" />
+		<CheckBoxPreference 
+			android:title="Push Incoming SMS"
+			android:defaultValue="true" 
+			android:summary="Enable pushing incoming SMS to GTalk"
+			android:key="cbPush" />
+	</PreferenceCategory>
+	
+	<PreferenceCategory android:title="Sound">
+		<CheckBoxPreference 
+			android:dependency="cbNotification"
+			android:title="Sound Notification"
+			android:defaultValue="true" 
+			android:summary="Enable sound notification when sending SMS"
+			android:key="cbSound" />
+	</PreferenceCategory>
+	
+	<PreferenceCategory android:title="Vibration">
+		<CheckBoxPreference 
+			android:dependency="cbNotification"
+			android:title="Vibration Notification"
+			android:defaultValue="true" 
+			android:summary="Enable vibration when sending SMS"
+			android:key="cbVibration" />
+	</PreferenceCategory>	
+</PreferenceScreen>

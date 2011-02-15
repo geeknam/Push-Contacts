@@ -36,6 +36,10 @@ from model import Info, Incoming
 
 import urllib, logging
 
+HELP_MSG = ("I am PushContacts bot. Type anything to reply to your latest SMS received. \n"
+            "Follow this format to send SMS to custom phone number: '/sms 96969696:this is my sms' \n"
+            "Type /help to bring this help message again")
+
 
 class MainHandler(webapp.RequestHandler):
     def get(self):
@@ -60,6 +64,8 @@ class RegisterHandler(webapp.RequestHandler):
                 info = Info(key_name=user.email())
                 info.registration_id = devregid   
                 info.put()
+                #Send invitation from pushcontacts@appspot.com to user's GTalk 
+                xmpp.send_invite(user.email())
                 self.response.out.write('OK')
             else:
                 self.response.out.write('Not authorized')
@@ -167,6 +173,8 @@ class XMPPHandler(xmpp_handlers.CommandHandler):
                 "data.phone_number" : phone}
         sendToPhone(self, data, email)
         message.reply("SMS has been sent")
+    def help_command(self, message=None):
+        message.reply(HELP_MSG)
 
 #Helper method to send params to C2DM server
 def sendToPhone(self,data,email):
