@@ -60,13 +60,15 @@ var handleContactsFeed = function(result) {
 	searchContacts();
 }
 
+gcontacts = $("#gcontacts");
+
 var handleError = function(error) {
-  $("#gcontacts").html("<img src='/static/css/error.png' width='30px' style='float:left; margin-top:-3px'/><span class='error'>Login to retrieve contacts</span>");
+  gcontacts.html("<img src='/static/css/error.png' width='30px' style='float:left; margin-top:-3px'/><span class='error'>Login to retrieve contacts</span>");
 }
 
 function searchContacts(search){
-	$("#gcontacts").html("");
-	$("#gcontacts").append("<table>");
+	gcontacts.html("");
+	gcontacts.append("<table>");
   	// Iterate through the array of contact entries
   	for (var i = 0; i < entries.length; i++) {
     	var contactEntry = entries[i];
@@ -83,7 +85,7 @@ function searchContacts(search){
 	        }
 		}
     }
-	$("#gcontacts").append("</table>");
+	gcontacts.append("</table>");
 }
 
 function generateContactList(contactEntry){
@@ -95,11 +97,11 @@ function generateContactList(contactEntry){
     if (phoneNumbers.length != 0) {
      	for (var j = 0; j < phoneNumbers.length; j++) {
 			var phoneNumber = phoneNumbers[j].getValue().replace(/\s+/g,'').replace("-","");
-			$("#gcontacts").append("<tr>");
-	  		$("#gcontacts").append("<td>"+name+"</td>");
-			$("#gcontacts").append("<td>"+phoneNumber+"</td>");
-			$("#gcontacts").append("<td><input type=\"button\" value=\"SMS\" onclick=\"fillData("+"'"+name+"','"+phoneNumber+"'"+")\"/></td>");
-			$("#gcontacts").append("</tr>");
+			gcontacts.append("<tr>");
+	  		gcontacts.append("<td>"+name+"</td>");
+			gcontacts.append("<td>"+phoneNumber+"</td>");
+			gcontacts.append("<td><input type=\"button\" value=\"SMS\" onclick=\"fillData("+"'"+name+"','"+phoneNumber+"'"+")\"/></td>");
+			gcontacts.append("</tr>");
 		}
     }
 }
@@ -123,17 +125,20 @@ function share(url){
     mywin.moveTo(200,200);
 }
 
+error_contact = $("#error_contact");
+error_sms     = $("#error_sms");
+
 function sendContact(){
 	var name   = $("input[name='name']:visible").val();
 	var phone  = $("input[name='phone']:visible").val();
 	
 	if(name.length === 0 || phone.length === 0){
-		$("#error_contact").fadeIn("slow").show();
+		error_contact.fadeIn("slow").show();
 	}
 	else{
 		$.get("/send", { name: name, phone: phone }, function(data){
 			$(document).trigger('close.facebox');
-			$("#error_contact").hide();
+			error_contact.hide();
 		});		
 	}
 }
@@ -143,16 +148,16 @@ function sendSms(){
 	var phone = $("#phone").val();		
 	
 	if(sms.length === 0){
-		$("#error_sms").fadeIn("slow").show();
+		error_sms.fadeIn("slow").show();
 	}
 	else{
 		$.post("/sms", { phone: phone, sms: sms }, function(data){
 			if(data == "OK"){
 				$(document).trigger('close.facebox');
-				$("#error_sms").hide();
+				error_sms.hide();
 			}
 			else{
-				$("#error_sms").html("The service is not available").fadeIn("slow").show();	
+				error_sms.html("The service is not available").fadeIn("slow").show();	
 			}
 		});
 	}

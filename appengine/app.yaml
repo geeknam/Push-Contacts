@@ -19,6 +19,7 @@ handlers:
   upload: static/images/favicon.ico
 
 - url: /test.*
+  login: admin
   script: gaeunit.py
     
 - url: .*
